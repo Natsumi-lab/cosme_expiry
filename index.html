@@ -144,12 +144,12 @@
         <!-- Page Content-->
         <div class="container px-4 px-lg-5">
             <!-- Hero Section -->
-            <div class="hero-section text-center">
+            <div class="hero-section">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
                         <h1 class="display-4 fw-bold mb-4">コスメの使用期限を<br>スマートに管理</h1>
                         <p class="lead mb-4">化粧品の開封日を登録するだけで、自動的に使用期限を計算。通知機能で期限切れを防止し、美容と衛生を両立します。</p>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
                             <a class="btn btn-primary btn-lg px-4 me-md-2" href="#!">
                                 <i class="fas fa-plus me-2"></i>アイテム登録
                             </a>
@@ -159,8 +159,8 @@
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <div class="chart-container">
-                            <canvas id="categoryChart"></canvas>
+                        <div class="hero-image-container">
+                            <img src="assets/images/header.jpg" alt="コスメ期限管理アプリのイメージ" class="hero-image img-fluid rounded">
                         </div>
                     </div>
                 </div>
@@ -191,6 +191,38 @@
                             <i class="fas fa-robot fa-3x mb-3"></i>
                             <h3 class="card-title">AI補完機能</h3>
                             <p class="card-text">商品名から自動でカテゴリや形状を推測し、衛生リスクや使用ペースのアドバイスを提供します。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row-->
+            <div class="row gx-4 gx-lg-5 my-5">
+                <div class="col-md-6 mb-5">
+                    <div class="card h-100 chart-card">
+                        <div class="card-header bg-transparent border-0 text-center">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-chart-pie me-2 text-primary"></i>カテゴリ別統計
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-5">
+                    <div class="card h-100 chart-card">
+                        <div class="card-header bg-transparent border-0 text-center">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-chart-bar me-2 text-primary"></i>期限別アイテム数
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="expiryChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -13,6 +13,12 @@ const sampleData = {
         'スキンケア': 20,
         'その他': 4
     },
+    expiryStatus: {
+        '期限切れ': 3,
+        '期限間近(7日以内)': 5,
+        '期限間近(30日以内)': 12,
+        '安全': 45
+    },
     recentItems: [
         {
             id: 1,
@@ -147,6 +153,92 @@ function initCategoryChart() {
     });
 }
 
+// 期限別統計グラフを初期化
+function initExpiryChart() {
+    const ctx = document.getElementById('expiryChart');
+    if (!ctx) return;
+
+    const labels = Object.keys(sampleData.expiryStatus);
+    const data = Object.values(sampleData.expiryStatus);
+    
+    // ステータス別カラーパレット
+    const colors = [
+        '#dc3545', // 期限切れ（赤）
+        '#ffc107', // 期限間近7日以内（黄）
+        '#fd7e14', // 期限間近30日以内（オレンジ）
+        '#198754'  // 安全（緑）
+    ];
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'アイテム数',
+                data: data,
+                backgroundColor: colors,
+                borderColor: colors.map(color => color),
+                borderWidth: 2,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#d3859c',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.parsed.y}個のアイテム`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 5,
+                        color: '#6c757d',
+                        font: {
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(108, 117, 125, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#6c757d',
+                        font: {
+                            size: 11,
+                            weight: '500'
+                        },
+                        maxRotation: 45
+                    },
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            animation: {
+                duration: 1000,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+}
+
 // 期限ステータスを判定
 function getExpiryStatus(daysLeft) {
     if (daysLeft < 0) return 'expired';
@@ -273,6 +365,7 @@ function initApp() {
     // Chart.jsが読み込まれるまで待機
     if (typeof Chart !== 'undefined') {
         initCategoryChart();
+        initExpiryChart();
     } else {
         setTimeout(initApp, 100);
         return;
@@ -292,9 +385,14 @@ document.addEventListener('DOMContentLoaded', initApp);
 // ウィンドウリサイズ時の処理
 window.addEventListener('resize', function() {
     // レスポンシブ対応のための処理
-    const chart = Chart.getChart('categoryChart');
-    if (chart) {
-        chart.resize();
+    const categoryChart = Chart.getChart('categoryChart');
+    const expiryChart = Chart.getChart('expiryChart');
+    
+    if (categoryChart) {
+        categoryChart.resize();
+    }
+    if (expiryChart) {
+        expiryChart.resize();
     }
 });
 

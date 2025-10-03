@@ -203,6 +203,37 @@
     font-size: 1.2rem;
 }
 
+/* Hero画像 */
+.hero-image-container {
+    position: relative;
+    text-align: center;
+}
+
+.hero-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    object-fit: cover;
+    max-height: 400px;
+}
+
+.hero-image:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 991.98px) {
+    .hero-image-container {
+        margin-top: 2rem;
+    }
+    
+    .hero-image {
+        max-height: 300px;
+    }
+}
+
 /* ボタンスタイル */
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
@@ -316,6 +347,44 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* グラフカード */
+.chart-card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.chart-card .card-header {
+    background: linear-gradient(135deg, var(--light-color), rgba(211, 133, 156, 0.05));
+    padding: 1.5rem;
+}
+
+.chart-card .card-title {
+    color: var(--dark-color);
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.chart-card .card-body {
+    padding: 1.5rem;
+}
+
+.chart-card .chart-container {
+    margin: 0;
+    padding: 10px;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    height: 280px;
+}
+
 /* アイテムカード */
 .item-card {
     border-radius: 15px;
@@ -401,6 +470,17 @@ footer h5, footer h6 {
     
     .hero-section h1 {
         font-size: 2rem;
+    }
+    
+    .hero-image {
+        max-height: 250px;
+        margin-top: 1.5rem;
+    }
+    
+    .hero-image-container {
+        order: -1;
+        margin-bottom: 2rem;
+        margin-top: 0;
     }
     
     .chart-container {
