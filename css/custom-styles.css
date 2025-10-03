@@ -209,6 +209,7 @@
 .hero-section .lead {
     color: var(--text-muted);
     font-size: 1.2rem;
+    font-weight: bold;
 }
 
 /* Hero画像 */
@@ -244,19 +245,22 @@
 
 /* ボタンスタイル */
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #edebed, #c73f75);
     border: none;
+    color: var(--white);
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: 25px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(211, 133, 156, 0.3);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+    text-decoration: none;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+    background: linear-gradient(135deg, #c73f75, #edebed);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(211, 133, 156, 0.4);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+    color: var(--white);
 }
 
 .btn-outline-primary {
@@ -275,22 +279,22 @@
 }
 
 .btn-outline-secondary {
-    color: var(--dark-color);
-    border-color: var(--dark-color);
-    border-width: 2px;
+    background: linear-gradient(135deg, #d1d0d1, #c73f75);
+    border: none;
+    color: var(--white);
     font-weight: 600;
+    padding: 0.75rem 1.5rem;
     border-radius: 25px;
     transition: all 0.3s ease;
-    background-color: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+    text-decoration: none;
 }
 
 .btn-outline-secondary:hover {
-    background-color: var(--dark-color);
-    border-color: var(--dark-color);
+    background: linear-gradient(135deg, #c73f75, #d1d0d1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
     color: var(--white);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* カードスタイル */
