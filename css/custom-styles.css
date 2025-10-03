@@ -179,14 +179,22 @@
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* ヒーローセクション */
 .hero-section {
-    background: linear-gradient(135deg, var(--light-color), rgba(211, 133, 156, 0.1));
+    background: linear-gradient(to bottom, rgba(216, 212, 213, 0.3), var(--light-color), var(--secondary-color));
     border-radius: 20px;
     padding: 3rem;
     margin: 2rem 0;
@@ -228,7 +236,7 @@
     .hero-image-container {
         margin-top: 2rem;
     }
-    
+
     .hero-image {
         max-height: 300px;
     }
@@ -267,17 +275,22 @@
 }
 
 .btn-outline-secondary {
-    color: var(--secondary-color);
-    border-color: var(--secondary-color);
+    color: var(--dark-color);
+    border-color: var(--dark-color);
     border-width: 2px;
     font-weight: 600;
     border-radius: 25px;
     transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .btn-outline-secondary:hover {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
+    background-color: var(--dark-color);
+    border-color: var(--dark-color);
+    color: var(--white);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* カードスタイル */
@@ -435,27 +448,30 @@ footer {
     background: linear-gradient(135deg, var(--dark-color), #2c2c2c) !important;
 }
 
-footer h5, footer h6 {
+footer h5,
+footer h6 {
     color: var(--primary-color) !important;
 }
 
 /* レスポンシブ調整 */
 @media (max-width: 991.98px) {
+
     /* Large screens未満でモバイルメニューを表示 */
     .navbar-nav {
         display: none;
     }
-    
+
     .navbar-toggler {
         display: block;
     }
-    
+
     .custom-navbar .container-fluid {
         justify-content: space-between;
     }
 }
 
 @media (min-width: 992px) {
+
     /* Large screens以上でドロップダウンを表示 */
     .navbar-toggler {
         display: none;
@@ -467,46 +483,46 @@ footer h5, footer h6 {
         padding: 2rem 1rem;
         text-align: center;
     }
-    
+
     .hero-section h1 {
         font-size: 2rem;
     }
-    
+
     .hero-image {
         max-height: 250px;
         margin-top: 1.5rem;
     }
-    
+
     .hero-image-container {
         order: -1;
         margin-bottom: 2rem;
         margin-top: 0;
     }
-    
+
     .chart-container {
         height: 250px;
         margin: 15px 0;
     }
-    
+
     .feature-icon {
         width: 60px;
         height: 60px;
         font-size: 1.5rem;
     }
-    
+
     .stats-card .card-body {
         padding: 1.5rem;
     }
-    
+
     /* モバイルでのナビゲーション調整 */
     .custom-navbar {
         padding: 0.75rem 0;
     }
-    
+
     .navbar-brand {
         font-size: 1.25rem;
     }
-    
+
     .custom-offcanvas {
         width: 100%;
         max-width: 300px;
@@ -517,30 +533,30 @@ footer h5, footer h6 {
     .hero-section {
         padding: 1.5rem 1rem;
     }
-    
+
     .hero-section h1 {
         font-size: 1.75rem;
     }
-    
+
     .btn-lg {
         padding: 0.5rem 1rem;
         font-size: 1rem;
     }
-    
+
     /* 極小画面でのナビゲーション調整 */
     .navbar-brand {
         font-size: 1.1rem;
     }
-    
+
     .custom-offcanvas {
         width: 100%;
         max-width: 280px;
     }
-    
+
     .mobile-user-info {
         padding: 1rem;
     }
-    
+
     .user-avatar {
         width: 32px;
         height: 32px;
@@ -553,12 +569,12 @@ footer h5, footer h6 {
     .custom-offcanvas .offcanvas-body {
         padding: 1rem;
     }
-    
+
     .mobile-user-info {
         margin-bottom: 1rem;
         padding: 0.75rem;
     }
-    
+
     .mobile-nav-link {
         padding: 0.5rem 1rem;
         margin: 0.125rem 0;
@@ -571,6 +587,7 @@ footer h5, footer h6 {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
