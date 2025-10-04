@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 fw-bold mb-4">コスメの使用期限を<br>スマートに管理</h1>
+            <p class="lead mb-4">化粧品の開封日を登録するだけで、自動的に使用期限を計算。通知機能で期限切れを防止し、美容と衛生を両立します。</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <a class="btn btn-primary btn-lg px-4 me-md-2" href="#!">
+                    <i class="fas fa-plus me-2"></i>アイテム登録
+                </a>
+                <a class="btn btn-outline-secondary btn-lg px-4" href="#!">
+                    <i class="fas fa-list me-2"></i>一覧を見る
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="hero-image-container">
+                <img src="{% static 'images/header.jpg' %}" alt="コスメ期限管理アプリのイメージ" class="hero-image img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Statistics Row-->
+<div class="row gx-4 gx-lg-5 my-5">
+    <div class="col-lg-4 mb-4">
+        <div class="card stats-card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                <h3 class="card-title">統計・分析</h3>
+                <p class="card-text">カテゴリ別の使用状況や期限切れ傾向を可視化し、より効率的なコスメ管理をサポートします。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card stats-card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-bell fa-3x mb-3"></i>
+                <h3 class="card-title">スマート通知</h3>
+                <p class="card-text">期限30日前、14日前、7日前に自動通知。期限超過後は毎週お知らせして無駄を防止します。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 mb-4">
+        <div class="card stats-card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-robot fa-3x mb-3"></i>
+                <h3 class="card-title">AI補完機能</h3>
+                <p class="card-text">商品名から自動でカテゴリや形状を推測し、衛生リスクや使用ペースのアドバイスを提供します。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row-->
+<div class="row gx-4 gx-lg-5 my-5">
+    <div class="col-md-6 mb-5">
+        <div class="card h-100 chart-card">
+            <div class="card-header bg-transparent border-0 text-center">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2 text-primary"></i>カテゴリ別統計
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-5">
+        <div class="card h-100 chart-card">
+            <div class="card-header bg-transparent border-0 text-center">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-chart-bar me-2 text-primary"></i>期限別アイテム数
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="expiryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Row-->
+<div class="row gx-4 gx-lg-5 my-5">
+    <div class="col-md-6 mb-5">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h4 class="card-title text-center">簡単な期限管理</h4>
+                <p class="card-text">開封日を入力するだけで、商品カテゴリに応じた使用期限を自動計算。複雑な設定は不要です。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-5">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h4 class="card-title text-center">高度な検索・フィルタ</h4>
+                <p class="card-text">商品名、カテゴリ、期限状況で絞り込み。お探しのアイテムを素早く見つけられます。</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Items Preview -->
+<div class="row my-5">
+    <div class="col-12">
+        <h3 class="text-center mb-4">最近登録されたアイテム</h3>
+        <div class="row" id="recentItemsContainer">
+            <!-- JavaScript で動的に生成 -->
+        </div>
+        <div class="text-center mt-4">
+            <a class="btn btn-outline-primary" href="#!">すべてのアイテムを見る</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
