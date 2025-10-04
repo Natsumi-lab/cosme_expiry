@@ -2,8 +2,8 @@
 
 :root {
     --primary-color: #d3859c;
-    --secondary-color: #bdafb5;
-    --light-color: #D8D4D5;
+    --secondary-color: #c7b19c;
+    --light-color: #f8dec6;
     --dark-color: #000000;
     --text-muted: #6c757d;
     --white: #ffffff;
@@ -245,19 +245,19 @@
 
 /* ボタンスタイル */
 .btn-primary {
-    background: linear-gradient(135deg, #edebed, #c73f75);
+    background: linear-gradient(135deg, #f9f2e2, #c73f75);
     border: none;
     color: var(--white);
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: 25px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+    box-shadow: 0 4px 12px rgba(89, 91, 92, 0.3);
     text-decoration: none;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #c73f75, #edebed);
+    background: linear-gradient(135deg, #c73f75, #f9f2e2);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
     color: var(--white);
@@ -279,7 +279,7 @@
 }
 
 .btn-outline-secondary {
-    background: linear-gradient(135deg, #d1d0d1, #c73f75);
+    background: linear-gradient(135deg, #f9f2e2, #cb3772);
     border: none;
     color: var(--white);
     font-weight: 600;
@@ -291,7 +291,7 @@
 }
 
 .btn-outline-secondary:hover {
-    background: linear-gradient(135deg, #c73f75, #d1d0d1);
+    background: linear-gradient(135deg, #c73f75, #f9f2e2);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
     color: var(--white);
@@ -379,7 +379,7 @@
 }
 
 .chart-card .card-header {
-    background: linear-gradient(135deg, var(--light-color), rgba(211, 133, 156, 0.05));
+    background: linear-gradient(135deg, var(--secondary-color), rgba(211, 133, 156, 0.05));
     padding: 1.5rem;
 }
 
