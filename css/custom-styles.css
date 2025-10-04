@@ -7,9 +7,10 @@
     --dark-color: #000000;
     --text-muted: #6c757d;
     --white: #ffffff;
-    --success: #198754;
-    --warning: #ffc107;
-    --danger: #dc3545;
+    --success: #22C55E;    /* 鮮やかな緑・明るめ（安全） */
+    --warning: #FDE047;    /* 明るい黄色・最も明るい（期限間近7日以内） */
+    --danger: #B91C1C;     /* 濃い赤・最も暗い（期限切れ） */
+    --warning-orange: #FB923C; /* 鮮やかなオレンジ・中間の明るさ（期限間近30日以内） */
     --info: #0dcaf0;
 }
 
@@ -489,6 +490,11 @@
 .expiry-status.warning {
     background-color: var(--warning);
     color: var(--dark-color);
+}
+
+.expiry-status.warning-orange {
+    background-color: var(--warning-orange);
+    color: var(--white);
 }
 
 .expiry-status.safe {
