@@ -1,38 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="化粧品・コスメの使用期限を管理するアプリ。開封日から自動で期限を計算し、通知でお知らせします。" />
-        <meta name="author" content="Cosme Expiry App" />
-        <title>コスメ期限管理 - Cosme Expiry Manager</title>
-        <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-        <!-- Font Awesome for icons -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-        <!-- Chart.js for statistics -->
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
-        <!-- Custom CSS -->
-        <link href="css/custom-styles.css" rel="stylesheet" />
-    </head>
-    <body>
-        <!-- Responsive navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-            <div class="container-fluid px-3 px-md-5">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="化粧品・コスメの使用期限を管理するアプリ。開封日から自動で期限を計算し、通知でお知らせします。" />
+    <meta name="author" content="Cosme Expiry App" />
+    <title>コスメ期限管理 - Cosme Expiry Manager</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Chart.js for statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+    <!-- Custom CSS -->
+    <link href="css/custom-styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- Responsive navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="navbar-container">
+            <!-- Left side: Brand and Navigation -->
+            <div class="navbar-left d-flex align-items-center">
                 <a class="navbar-brand fw-bold" href="#!">
                     <i class="fas fa-spa me-2"></i>コスメ期限管理
                 </a>
-                
-                <!-- Mobile menu button -->
-                <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="メニューを開く">
-                    <i class="fas fa-bars"></i>
-                </button>
 
                 <!-- Desktop navigation -->
-                <div class="collapse navbar-collapse d-none d-lg-block" id="navbarSupportedContent">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <div class="d-none d-lg-block ms-4">
+                    <ul class="navbar-nav d-flex flex-row">
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="#!">
                                 <i class="fas fa-home me-1"></i>ホーム
@@ -55,244 +54,266 @@
                             </a>
                         </li>
                     </ul>
-                    
-                    <!-- User account dropdown -->
-                    <div class="dropdown">
-                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="user-avatar me-2">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <span class="d-none d-xl-inline">ログインユーザー</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end custom-dropdown">
-                            <li>
-                                <a class="dropdown-item" href="#!">
-                                    <i class="fas fa-user-cog me-2"></i>アカウント設定
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="#!">
-                                    <i class="fas fa-sign-out-alt me-2"></i>ログアウト
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </div>
-        </nav>
 
-        <!-- Mobile Offcanvas Menu -->
-        <div class="offcanvas offcanvas-start custom-offcanvas" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="mobileMenuLabel">
-                    <i class="fas fa-spa me-2"></i>コスメ期限管理
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="閉じる"></button>
-            </div>
-            <div class="offcanvas-body">
-                <!-- User info -->
-                <div class="mobile-user-info mb-4 p-3 rounded">
-                    <div class="d-flex align-items-center">
-                        <div class="user-avatar me-3">
+            <!-- Right side: User account and mobile menu -->
+            <div class="navbar-right d-flex align-items-center">
+                <!-- User account dropdown (desktop) -->
+                <div class="dropdown d-none d-lg-block">
+                    <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-avatar me-2">
                             <i class="fas fa-user"></i>
                         </div>
-                        <div>
-                            <div class="fw-bold text-white">ログインユーザー</div>
-                            <small class="text-white-50">user@example.com</small>
-                        </div>
-                    </div>
+                        <span class="d-none d-xl-inline">ログインユーザー</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end custom-dropdown">
+                        <li>
+                            <a class="dropdown-item" href="#!">
+                                <i class="fas fa-user-cog me-2"></i>アカウント設定
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item text-danger" href="#!">
+                                <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                
-                <!-- Mobile navigation menu -->
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
-                            <i class="fas fa-home me-2"></i>ホーム
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
-                            <i class="fas fa-list me-2"></i>アイテム一覧
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
-                            <i class="fas fa-plus me-2"></i>アイテム追加
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link mobile-nav-link position-relative" href="#!" data-bs-dismiss="offcanvas">
-                            <i class="fas fa-bell me-2"></i>通知一覧
-                            <span class="notification-badge-mobile">3</span>
-                        </a>
-                    </li>
-                    <li><hr class="mobile-divider"></li>
-                    <li class="nav-item">
-                        <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
-                            <i class="fas fa-user-cog me-2"></i>アカウント設定
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link mobile-nav-link text-danger" href="#!" data-bs-dismiss="offcanvas">
-                            <i class="fas fa-sign-out-alt me-2"></i>ログアウト
-                        </a>
-                    </li>
-                </ul>
+
+                <!-- Mobile menu button -->
+                <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="メニューを開く">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
         </div>
-        <!-- Page Content-->
-        <div class="container px-4 px-lg-5">
-            <!-- Hero Section -->
-            <div class="hero-section">
-                <div class="row align-items-center">
-                    <div class="col-lg-6">
-                        <h1 class="display-4 fw-bold mb-4">コスメの使用期限を<br>スマートに管理</h1>
-                        <p class="lead mb-4">化粧品の開封日を登録するだけで、自動的に使用期限を計算。通知機能で期限切れを防止し、美容と衛生を両立します。</p>
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                            <a class="btn btn-primary btn-lg px-4 me-md-2" href="#!">
-                                <i class="fas fa-plus me-2"></i>アイテム登録
-                            </a>
-                            <a class="btn btn-outline-secondary btn-lg px-4" href="#!">
-                                <i class="fas fa-list me-2"></i>一覧を見る
-                            </a>
-                        </div>
+    </nav>
+
+    <!-- Mobile Offcanvas Menu -->
+    <div class="offcanvas offcanvas-start custom-offcanvas" tabindex="-1" id="mobileMenu"
+        aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="mobileMenuLabel">
+                <i class="fas fa-spa me-2"></i>コスメ期限管理
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
+                aria-label="閉じる"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- User info -->
+            <div class="mobile-user-info mb-4 p-3 rounded">
+                <div class="d-flex align-items-center">
+                    <div class="user-avatar me-3">
+                        <i class="fas fa-user"></i>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="hero-image-container">
-                            <img src="assets/images/header.jpg" alt="コスメ期限管理アプリのイメージ" class="hero-image img-fluid rounded">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Statistics Row-->
-            <div class="row gx-4 gx-lg-5 my-5">
-                <div class="col-lg-4 mb-4">
-                    <div class="card stats-card text-center h-100">
-                        <div class="card-body">
-                            <i class="fas fa-chart-pie fa-3x mb-3"></i>
-                            <h3 class="card-title">統計・分析</h3>
-                            <p class="card-text">カテゴリ別の使用状況や期限切れ傾向を可視化し、より効率的なコスメ管理をサポートします。</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card stats-card text-center h-100">
-                        <div class="card-body">
-                            <i class="fas fa-bell fa-3x mb-3"></i>
-                            <h3 class="card-title">スマート通知</h3>
-                            <p class="card-text">期限30日前、14日前、7日前に自動通知。期限超過後は毎週お知らせして無駄を防止します。</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 mb-4">
-                    <div class="card stats-card text-center h-100">
-                        <div class="card-body">
-                            <i class="fas fa-robot fa-3x mb-3"></i>
-                            <h3 class="card-title">AI補完機能</h3>
-                            <p class="card-text">商品名から自動でカテゴリや形状を推測し、衛生リスクや使用ペースのアドバイスを提供します。</p>
-                        </div>
+                    <div>
+                        <div class="fw-bold text-white">ログインユーザー</div>
+                        <small class="text-white-50">user@example.com</small>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts Row-->
-            <div class="row gx-4 gx-lg-5 my-5">
-                <div class="col-md-6 mb-5">
-                    <div class="card h-100 chart-card">
-                        <div class="card-header bg-transparent border-0 text-center">
-                            <h4 class="card-title mb-0">
-                                <i class="fas fa-chart-pie me-2 text-primary"></i>カテゴリ別統計
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="categoryChart"></canvas>
-                            </div>
-                        </div>
+            <!-- Mobile navigation menu -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-home me-2"></i>ホーム
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-list me-2"></i>アイテム一覧
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-plus me-2"></i>アイテム追加
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mobile-nav-link position-relative" href="#!" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-bell me-2"></i>通知一覧
+                        <span class="notification-badge-mobile">3</span>
+                    </a>
+                </li>
+                <li>
+                    <hr class="mobile-divider">
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-user-cog me-2"></i>アカウント設定
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link mobile-nav-link text-danger" href="#!" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-sign-out-alt me-2"></i>ログアウト
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- Page Content-->
+    <div class="main-container">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">コスメの使用期限を<br>スマートに管理</h1>
+                    <p class="lead mb-4">化粧品の開封日を登録するだけで、自動的に使用期限を計算。通知機能で期限切れを防止し、美容と衛生を両立します。</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <a class="btn btn-primary btn-lg px-4 me-md-2" href="#!">
+                            <i class="fas fa-plus me-2"></i>アイテム登録
+                        </a>
+                        <a class="btn btn-outline-secondary btn-lg px-4" href="#!">
+                            <i class="fas fa-list me-2"></i>一覧を見る
+                        </a>
                     </div>
                 </div>
-                <div class="col-md-6 mb-5">
-                    <div class="card h-100 chart-card">
-                        <div class="card-header bg-transparent border-0 text-center">
-                            <h4 class="card-title mb-0">
-                                <i class="fas fa-chart-bar me-2 text-primary"></i>期限別アイテム数
-                            </h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="expiryChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Features Row-->
-            <div class="row gx-4 gx-lg-5 my-5">
-                <div class="col-md-6 mb-5">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="feature-icon">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <h4 class="card-title text-center">簡単な期限管理</h4>
-                            <p class="card-text">開封日を入力するだけで、商品カテゴリに応じた使用期限を自動計算。複雑な設定は不要です。</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-5">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="feature-icon">
-                                <i class="fas fa-search"></i>
-                            </div>
-                            <h4 class="card-title text-center">高度な検索・フィルタ</h4>
-                            <p class="card-text">商品名、カテゴリ、期限状況で絞り込み。お探しのアイテムを素早く見つけられます。</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Items Preview -->
-            <div class="row my-5">
-                <div class="col-12">
-                    <h3 class="text-center mb-4">最近登録されたアイテム</h3>
-                    <div class="row" id="recentItemsContainer">
-                        <!-- JavaScript で動的に生成 -->
-                    </div>
-                    <div class="text-center mt-4">
-                        <a class="btn btn-outline-primary" href="#!">すべてのアイテムを見る</a>
+                <div class="col-lg-6">
+                    <div class="hero-image-container">
+                        <img src="assets/images/header.jpg" alt="コスメ期限管理アプリのイメージ" class="hero-image img-fluid rounded">
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Footer-->
-        <footer class="py-5 bg-dark">
-            <div class="container px-4 px-lg-5">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <h5 class="text-white mb-3">
-                            <i class="fas fa-spa me-2"></i>コスメ期限管理
-                        </h5>
-                        <p class="text-white-50">化粧品の使用期限を効率的に管理し、美容と衛生を両立するアプリケーションです。</p>
-                    </div>
-                    <div class="col-lg-6">
-                        <h6 class="text-white mb-3">リンク</h6>
-                        <ul class="list-unstyled text-white-50">
-                            <li><a href="#!" class="text-white-50 text-decoration-none">利用規約</a></li>
-                            <li><a href="#!" class="text-white-50 text-decoration-none">プライバシーポリシー</a></li>
-                            <li><a href="#!" class="text-white-50 text-decoration-none">お問い合わせ</a></li>
-                        </ul>
+        <!-- Statistics Row-->
+        <div class="row gx-4 gx-lg-5 my-5">
+            <div class="col-lg-4 mb-4">
+                <div class="card stats-card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                        <h3 class="card-title">統計・分析</h3>
+                        <p class="card-text">カテゴリ別の使用状況や期限切れ傾向を可視化し、より効率的なコスメ管理をサポートします。</p>
                     </div>
                 </div>
-                <hr class="my-4" style="border-color: #495057;">
-                <p class="m-0 text-center text-white-50">Copyright &copy; コスメ期限管理 2024</p>
             </div>
-        </footer>
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS-->
-        <script src="js/scripts.js"></script>
-    </body>
+            <div class="col-lg-4 mb-4">
+                <div class="card stats-card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-bell fa-3x mb-3"></i>
+                        <h3 class="card-title">スマート通知</h3>
+                        <p class="card-text">期限30日前、14日前、7日前に自動通知。期限超過後は毎週お知らせして無駄を防止します。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card stats-card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-robot fa-3x mb-3"></i>
+                        <h3 class="card-title">AI補完機能</h3>
+                        <p class="card-text">商品名から自動でカテゴリや形状を推測し、衛生リスクや使用ペースのアドバイスを提供します。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row-->
+        <div class="row gx-4 gx-lg-5 my-5">
+            <div class="col-md-6 mb-5">
+                <div class="card h-100 chart-card">
+                    <div class="card-header bg-transparent border-0 text-center">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2 text-primary"></i>カテゴリ別統計
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-5">
+                <div class="card h-100 chart-card">
+                    <div class="card-header bg-transparent border-0 text-center">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-chart-bar me-2 text-primary"></i>期限別アイテム数
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="expiryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Row-->
+        <div class="row gx-4 gx-lg-5 my-5">
+            <div class="col-md-6 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h4 class="card-title text-center">簡単な期限管理</h4>
+                        <p class="card-text">開封日を入力するだけで、商品カテゴリに応じた使用期限を自動計算。複雑な設定は不要です。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-5">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h4 class="card-title text-center">高度な検索・フィルタ</h4>
+                        <p class="card-text">商品名、カテゴリ、期限状況で絞り込み。お探しのアイテムを素早く見つけられます。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Items Preview -->
+        <div class="row my-5">
+            <div class="col-12">
+                <h3 class="text-center mb-4">最近登録されたアイテム</h3>
+                <div class="row" id="recentItemsContainer">
+                    <!-- JavaScript で動的に生成 -->
+                </div>
+                <div class="text-center mt-4">
+                    <a class="btn btn-outline-primary" href="#!">すべてのアイテムを見る</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer-->
+    <footer class="py-5 bg-dark">
+        <div class="footer-container">
+            <div class="footer-content d-flex justify-content-between align-items-start">
+                <!-- Left side: Brand and description -->
+                <div class="footer-left">
+                    <h5 class="text-white mb-3">
+                        <i class="fas fa-spa me-2"></i>コスメ期限管理
+                    </h5>
+                    <p class="text-white-50">化粧品の使用期限を効率的に管理し、美容と衛生を両立するアプリケーションです。</p>
+                </div>
+
+                <!-- Right side: Links section -->
+                <div class="footer-right">
+                    <h6 class="text-white mb-3">リンク</h6>
+                    <div class="footer-links d-flex flex-wrap gap-3">
+                        <a href="#!" class="text-white-50 text-decoration-none footer-link">利用規約</a>
+                        <a href="#!" class="text-white-50 text-decoration-none footer-link">プライバシーポリシー</a>
+                        <a href="#!" class="text-white-50 text-decoration-none footer-link">お問い合わせ</a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" style="border-color: #495057;">
+            <p class="m-0 text-center text-white-50">Copyright &copy; コスメ期限管理 2025</p>
+        </div>
+    </footer>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+</body>
+
 </html>
