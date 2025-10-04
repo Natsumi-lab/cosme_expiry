@@ -161,12 +161,12 @@ function initExpiryChart() {
     const labels = Object.keys(sampleData.expiryStatus);
     const data = Object.values(sampleData.expiryStatus);
     
-    // ステータス別カラーパレット
+    // ステータス別カラーパレット（明度と色相の差を最大化して区別しやすくした色）
     const colors = [
-        '#dc3545', // 期限切れ（赤）
-        '#ffc107', // 期限間近7日以内（黄）
-        '#fd7e14', // 期限間近30日以内（オレンジ）
-        '#198754'  // 安全（緑）
+        '#B91C1C', // 期限切れ（濃い赤・最も暗い）
+        '#FDE047', // 期限間近7日以内（明るい黄色・最も明るい）
+        '#FB923C', // 期限間近30日以内（鮮やかなオレンジ・中間の明るさ）
+        '#22C55E'  // 安全（鮮やかな緑・明るめ）
     ];
 
     new Chart(ctx, {
