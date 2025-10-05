@@ -33,8 +33,9 @@ MANIFEST
 *.sqlite3
 *.db
 
-# Django migrations (開発中は除外、本番では管理)
-# migrations/
+# Django migrations (新規作成ファイルのみ除外、既存は管理)
+beauty/migrations/__pycache__/
+beauty/migrations/*.pyc
 
 # Django settings for different environments
 local_settings.py

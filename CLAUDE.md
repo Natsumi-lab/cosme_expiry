@@ -1,49 +1,147 @@
-# プロジェクト概要
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## プロジェクト概要
+
 このプロジェクトは、化粧品やメイク用品の **使用期限を管理するアプリ** です。  
 ユーザーは商品名・開封日・カテゴリ・形状などを登録することで、自動的に使用期限を計算・通知を受け取れます。  
 また、LLM（ChatGPT API）を利用してカテゴリや形状を自動補完し、衛生リスクや使用ペース改善のアドバイスを提示します。  
 ポートフォリオとして、実務で使える設計力・実装力・デザイン力をアピールする目的も含みます。
 
----
+## Common Development Commands
 
-# 技術スタック
+### Django Management Commands
 
-## フロントエンド
-- **言語**: HTML / CSS / JavaScript  
-- **認証**: Django標準認証を利用（サインアップ、ログイン、ログアウト、パスワード変更）
-- **通知**: Django通知を利用（未読数バッジ表示、通知一覧表示）    
-- **特徴**:  
-  - レスポンシブ対応  
-  - アイテム一覧のカード表示（検索、フィルタ、ソート）  
-  - 通知アイコン（未読数バッジ付き）  
-  - 統計グラフ（円グラフ・棒グラフ）
+```bash
+# Start development server
+python manage.py runserver
 
-## バックエンド
-- **フレームワーク**: Django  
-- **データベース**: SQLite  
-- **機能**:  
-  - アイテムCRUD（登録／一覧／詳細／編集／削除）  
-  - 通知生成（30日前／14日前／7日前／超過毎週）  
-  - LLM補完処理（カテゴリ／形状／アドバイス候補提示）  
-  - 編集差分ガード（変更なし保存はノーオペ200）  
-  - LLMログ（採用／却下のみ最小記録）
+# Database operations
+python manage.py makemigrations
+python manage.py migrate
 
-## ファイル構成
-- HTML、CSS、JavaScriptは必ず別ファイルに分離
-- インラインスタイルやインラインスクリプトは使用しない
+# Admin operations
+python manage.py createsuperuser
 
----
+# Testing and maintenance
+python manage.py check
+python manage.py test
+python manage.py shell
 
-# デプロイ
-- **ホスティング**: PythonAnywhere  
-- **外部API**: OpenAI API（ChatGPT）  
-- **画像ストレージ**: 開始時はローカル保存、将来的にはクラウド（S3やCloudinary）を検討
+# Static files (if needed)
+python manage.py collectstatic
+```
 
-# デザイン
-- メインカラー：
-  - #f8dec6  
-  - #c7b19c
-  - #d3859c
-  - #000000
-- デザインの方向性：
-  - モダンで洗練された都会的なスタイル
+### Database Management
+
+```bash
+# View migration status
+python manage.py showmigrations
+
+# Create specific app migrations
+python manage.py makemigrations beauty
+
+# Apply specific migration
+python manage.py migrate beauty
+```
+
+## Project Architecture
+
+### Django Structure
+
+This is a single-app Django project with the following structure:
+
+- **Main Project**: `cosme_expiry_app/` - Contains settings, main URLs, and WSGI/ASGI configuration
+- **Beauty App**: `beauty/` - Main application containing all business logic
+  - Models: Currently minimal structure in `models.py`
+  - Views: Basic home view in `views.py`
+  - Templates: Bootstrap-based responsive design with `base.html` and `home.html`
+  - Static files: Separated CSS (`styles.css`, `custom-styles.css`) and JavaScript (`scripts.js`)
+
+### Key Settings
+
+- **Language**: Japanese (`ja`) with Asia/Tokyo timezone
+- **Database**: SQLite for development
+- **Debug Mode**: Enabled for development
+- **Static Files**: Configured with `beauty/static/` directory
+- **Templates**: Located in `beauty/templates/`
+
+### Planned Features (Not Yet Implemented)
+
+Based on the templates and existing documentation:
+
+1. **Item Management**: CRUD operations for cosmetic items
+2. **Notification System**: Automated expiry notifications (30/14/7 days before, weekly after expiry)
+3. **LLM Integration**: ChatGPT API for category/shape auto-completion and advice
+4. **User Authentication**: Django's built-in auth system
+5. **Statistics Dashboard**: Charts showing category distribution and expiry status
+6. **Search and Filtering**: Advanced item filtering capabilities
+
+## File Organization Standards
+
+### Template Structure
+
+- `base.html`: Main template with responsive navbar, mobile menu, and footer
+- Uses Bootstrap 5.2.3 with Font Awesome icons
+- Chart.js integration for statistics display
+- Custom CSS separated into multiple files
+
+### Static Files Organization
+
+```
+beauty/static/
+├── css/
+│   ├── styles.css          # Main styles
+│   └── custom-styles.css   # Custom overrides
+├── images/
+│   ├── favicon.ico
+│   └── header.jpg
+└── js/
+    └── scripts.js          # Main JavaScript
+```
+
+### Code Standards
+
+- **File Separation**: HTML, CSS, and JavaScript must be in separate files
+- **No Inline Styles**: All styling must be in CSS files
+- **No Inline Scripts**: All JavaScript must be in separate JS files
+- **Responsive Design**: Mobile-first approach with Bootstrap
+- **Accessibility**: Proper ARIA labels and semantic HTML
+
+## Design System
+
+### Color Palette
+
+- Primary: `#f8dec6` (Light cream)
+- Secondary: `#c7b19c` (Warm brown)
+- Accent: `#d3859c` (Dusty rose)
+- Text: `#000000` (Black)
+
+### Design Direction
+
+- Modern and sophisticated urban style
+- Clean, minimal interface
+- Focus on usability and accessibility
+
+## Development Environment
+
+- **Python**: 3.13.5
+- **Django**: 5.2+ (inferred from settings structure)
+- **Frontend**: Bootstrap 5.2.3, Font Awesome 6.0.0, Chart.js
+- **Database**: SQLite (development)
+
+## Deployment Configuration
+
+- **Target Platform**: PythonAnywhere
+- **External APIs**: OpenAI API for LLM features
+- **Image Storage**: Local storage initially, cloud storage (S3/Cloudinary) planned
+- **Security**: Development secret key present (change for production)
+
+## Development Notes
+
+- Models are currently minimal and need implementation based on planned features
+- Authentication system not yet implemented
+- LLM integration not yet implemented  
+- Charts and statistics features are templated but need backend implementation
+- Mobile responsiveness is fully implemented in templates
