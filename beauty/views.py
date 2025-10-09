@@ -1,4 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from .forms import SignUpForm
+from .models import Taxon, LlmSuggestionLog
 
 
 def home(request):
@@ -7,6 +17,51 @@ def home(request):
     統計データとサンプルアイテムを表示
     """
     return render(request, 'home.html')
+
+
+@method_decorator([csrf_protect, never_cache], name='dispatch')
+class SignUpView(CreateView):
+    """ユーザー登録ビュー"""
+    form_class = SignUpForm
+    template_name = 'signup.html'
+    success_url = reverse_lazy('beauty:home')  # 後でログインページに変更
+    
+    def dispatch(self, request, *args, **kwargs):
+        """ログイン済みユーザーはホームにリダイレクト"""
+        if request.user.is_authenticated:
+            messages.info(request, '既にログインしています。')
+            return redirect('beauty:home')
+        return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self, form):
+        """登録成功時の処理"""
+        response = super().form_valid(form)
+        
+        # 自動ログイン
+        login(self.request, self.object)
+        
+        # 成功メッセージ
+        messages.success(
+            self.request, 
+            f'ようこそ、{self.object.username}さん！アカウントの登録が完了しました。'
+        )
+        
+        return response
+    
+    def form_invalid(self, form):
+        """登録失敗時の処理"""
+        messages.error(
+            self.request, 
+            '入力内容に誤りがあります。以下のエラーを確認してください。'
+        )
+        return super().form_invalid(form)
+    
+    def get_context_data(self, **kwargs):
+        """テンプレートコンテキストに追加データを渡す"""
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'アカウント登録'
+        context['page_description'] = 'コスメ期限管理アプリのアカウントを新規作成します。'
+        return context
 
 # views.py または services.py
 
