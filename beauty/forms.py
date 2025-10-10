@@ -93,3 +93,38 @@ class SignUpForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class SignInForm(forms.Form):
+    """ログインフォーム（カスタム）"""
+    
+    username = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'メールアドレス',
+            'id': 'email',
+            'autocomplete': 'email'
+        }),
+        label='メールアドレス',
+        help_text='登録時に使用したメールアドレスを入力してください。'
+    )
+    
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'パスワード',
+            'id': 'password',
+            'autocomplete': 'current-password'
+        }),
+        label='パスワード',
+        help_text='アカウント作成時に設定したパスワードを入力してください。'
+    )
+    
+    def clean_username(self):
+        """メールアドレス形式の検証"""
+        username = self.cleaned_data.get('username')
+        if username:
+            # メールアドレス形式の簡易チェック
+            if '@' not in username or '.' not in username:
+                raise ValidationError('有効なメールアドレスを入力してください。')
+        return username
