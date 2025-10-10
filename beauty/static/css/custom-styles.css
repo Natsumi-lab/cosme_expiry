@@ -827,3 +827,39 @@ footer h6 {
     background-color: var(--safety);
     color: var(--white);
 }
+
+/* === new.html のフォーム関連カスタム === */
+.required::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.form-label {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.card {
+    border: 1px solid rgba(208, 133, 156, 0.2) !important;
+}
+
+.btn-primary {
+    background-color: #d3859c;
+    border-color: #d3859c;
+}
+
+.btn-primary:hover {
+    background-color: #c7758f;
+    border-color: #c7758f;
+}
+
+.text-primary {
+    color: #d3859c !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #d3859c;
+    box-shadow: 0 0 0 0.2rem rgba(211, 133, 156, 0.25);
+}
