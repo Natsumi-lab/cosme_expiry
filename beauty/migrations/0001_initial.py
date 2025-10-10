@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('color_code', models.CharField(blank=True, max_length=50, verbose_name='色番/カラー')),
                 ('image_url', models.CharField(blank=True, max_length=500, verbose_name='画像URL')),
                 ('opened_on', models.DateField(verbose_name='開封日')),
-                ('expires_on', models.DateField(verbose_name='消費期限')),
+                ('expires_on', models.DateField(verbose_name='使用期限')),
                 ('expires_overridden', models.BooleanField(default=False, verbose_name='期限手動上書き')),
                 ('status', models.CharField(choices=[('using', '使用中'), ('finished', '使用済み')], default='using', max_length=10, verbose_name='ステータス')),
                 ('finished_at', models.DateField(blank=True, null=True, verbose_name='使用終了日')),

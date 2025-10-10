@@ -8,8 +8,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
-from .forms import SignUpForm, SignInForm
-from .models import Taxon, LlmSuggestionLog
+from .forms import SignUpForm, SignInForm, ItemForm
+from .models import Taxon, LlmSuggestionLog, Item
 
 
 @login_required
@@ -195,3 +195,41 @@ def confirm_llm_suggestion(log_id, user_confirmed_taxon_id):
     log.save()
     
     return chosen_taxon
+
+
+@login_required
+def item_new(request):
+    """アイテム新規登録ビュー"""
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.user = request.user
+            
+            # 画像アップロード処理
+            if 'image' in request.FILES:
+                # 後でPillowを使った画像処理を追加予定
+                pass
+            
+            item.save()
+            
+            messages.success(
+                request,
+                f'「{item.name}」を登録しました。'
+            )
+            return redirect('beauty:item_list')  # 後で実装予定
+        else:
+            messages.error(
+                request,
+                'アイテムの登録に失敗しました。入力内容を確認してください。'
+            )
+    else:
+        form = ItemForm()
+    
+    context = {
+        'form': form,
+        'page_title': 'アイテム新規登録',
+        'page_description': '新しいコスメアイテムを登録します'
+    }
+    
+    return render(request, 'items/new.html', context)

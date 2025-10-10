@@ -127,7 +127,7 @@ js/
 
 **Design System**:
 - Primary: `#f8dec6` (Light Cream)
-- Secondary: `#c7b19c` (Warm Brown)
+- Secondary: #f0d5bb
 - Accent: `#d3859c` (Dusty Rose)
 - Bootstrap 5.2.3 with responsive breakpoints
 

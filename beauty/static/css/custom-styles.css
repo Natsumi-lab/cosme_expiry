@@ -2,15 +2,19 @@
 
 :root {
     --primary-color: #d3859c;
-    --secondary-color: #c7b19c;
+    --secondary-color: #f0d5bb;
     --light-color: #f8dec6;
     --dark-color: #000000;
     --text-muted: #6c757d;
     --white: #ffffff;
-    --success: #22C55E;    /* 鮮やかな緑・明るめ（安全） */
-    --warning: #FDE047;    /* 明るい黄色・最も明るい（期限間近7日以内） */
-    --danger: #B91C1C;     /* 濃い赤・最も暗い（期限切れ） */
-    --warning-orange: #FB923C; /* 鮮やかなオレンジ・中間の明るさ（期限間近30日以内） */
+    --success: #22C55E;
+    /* 鮮やかな緑・明るめ（余裕あり） */
+    --warning: #FDE047;
+    /* 明るい黄色・最も明るい（期限7日以内） */
+    --danger: #B91C1C;
+    /* 濃い赤・最も暗い（期限切れ） */
+    --warning-orange: #FB923C;
+    /* 鮮やかなオレンジ・中間の明るさ（期限30日以内） */
     --info: #0dcaf0;
 }
 
@@ -75,6 +79,7 @@
 
 /* レスポンシブ調整 */
 @media (max-width: 1200px) {
+
     .navbar-container,
     .main-container,
     .footer-container {
@@ -83,6 +88,7 @@
 }
 
 @media (max-width: 992px) {
+
     .navbar-container,
     .main-container,
     .footer-container {
@@ -561,19 +567,19 @@ footer h6 {
         flex-direction: column;
         gap: 2rem;
     }
-    
+
     .footer-left {
         max-width: 100%;
     }
-    
+
     .footer-right {
         text-align: left;
     }
-    
+
     .footer-right h6 {
         text-align: left;
     }
-    
+
     .footer-container {
         padding: 0 1rem;
     }
@@ -585,7 +591,7 @@ footer h6 {
         align-items: flex-start;
         gap: 0.75rem !important;
     }
-    
+
     .footer-link {
         padding: 0.5rem 0;
     }
@@ -620,11 +626,11 @@ footer h6 {
     .main-container {
         padding: 0 1rem;
     }
-    
+
     .navbar-container {
         padding: 0 1rem;
     }
-    
+
     .hero-section {
         padding: 2rem 1rem;
         text-align: center;
