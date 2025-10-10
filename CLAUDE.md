@@ -55,10 +55,10 @@ python manage.py migrate beauty
 # Activate virtual environment (Windows)
 venv\Scripts\activate
 
-# Install dependencies (no requirements.txt yet)
-pip install Django==5.2.4
+# Install dependencies
+pip install -r requirements.txt
 
-# Generate requirements file after installations
+# Generate requirements file after installing new packages
 pip freeze > requirements.txt
 ```
 

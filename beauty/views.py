@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -8,6 +8,10 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
+from django.http import Http404
+from django.core.exceptions import PermissionDenied
+from django.utils import timezone
+from datetime import date, timedelta
 from .forms import SignUpForm, SignInForm, ItemForm
 from .models import Taxon, LlmSuggestionLog, Item
 
@@ -217,7 +221,7 @@ def item_new(request):
                 request,
                 f'「{item.name}」を登録しました。'
             )
-            return redirect('beauty:item_list')  # 後で実装予定
+            return redirect('beauty:item_detail', id=item.id) 
         else:
             messages.error(
                 request,
@@ -233,3 +237,61 @@ def item_new(request):
     }
     
     return render(request, 'items/new.html', context)
+
+def item_list(request):
+    items = Item.objects.filter(user=request.user)
+    return render(request, 'beauty/items/item_list.html', {'items': items})
+
+
+@login_required
+def item_detail(request, id):
+    """アイテム詳細ビュー"""
+    # ログインユーザーのアイテムのみ取得（セキュリティ対策）
+    try:
+        item = Item.objects.get(id=id, user=request.user)
+    except Item.DoesNotExist:
+        other_user_item = Item.objects.filter(id=id).first()
+        if other_user_item:
+            raise PermissionDenied("このアイテムにアクセスする権限がありません。")
+        else:
+            raise Http404("アイテムが見つかりません。")
+    
+    # 残日数とリスクレベルを計算
+    today = date.today()
+    days_remaining = (item.expires_on - today).days
+    days_abs = abs(days_remaining)  # ←★ 追加：絶対値を計算
+
+    # リスクレベル判定
+    if days_remaining < 0:
+        risk_level = 'expired'
+        risk_text = '期限切れ'
+        risk_class = 'danger'
+    elif days_remaining <= 7:
+        risk_level = 'critical'
+        risk_text = '期限7日以内'
+        risk_class = 'warning'
+    elif days_remaining <= 14:
+        risk_level = 'warning'
+        risk_text = '期限14日以内'
+        risk_class = 'warning-orange'
+    elif days_remaining <= 30:
+        risk_level = 'caution'
+        risk_text = '期限30日以内'
+        risk_class = 'fine'
+    else:
+        risk_level = 'safe'
+        risk_text = '余裕あり'
+        risk_class = 'safety'
+    
+    context = {
+        'item': item,
+        'days_remaining': days_remaining,
+        'days_abs': days_abs,  # ←★ 追加
+        'risk_level': risk_level,
+        'risk_text': risk_text,
+        'risk_class': risk_class,
+        'page_title': f'アイテム詳細 - {item.name}',
+        'page_description': f'{item.name}の詳細情報を表示します'
+    }
+    
+    return render(request, 'items/detail.html', context)
