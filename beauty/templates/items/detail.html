@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4 px-lg-5">
+    <!-- Page Header -->
+    <div class="row gx-4 gx-lg-5 align-items-center my-4">
+        <div class="col-lg-8">
+            <h1 class="display-5 fw-bolder text-dark mb-2">
+                <i class="fas fa-eye text-primary me-3"></i>アイテム詳細
+            </h1>
+            <p class="lead fw-normal text-muted mb-0">{{ item.name }}の詳細情報</p>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="row">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Detail Section -->
+    <div class="row gx-4 gx-lg-5">
+        <div class="col-lg-8 mx-auto">
+
+            <!-- Image Display -->
+            <div class="card border-0 rounded-3 shadow-sm mb-4">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="fas fa-image me-2"></i>商品画像
+                    </h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}"
+                        class="img-fluid rounded shadow-sm item-detail-image">
+                    {% else %}
+                    <div class="text-muted py-5 no-image-placeholder">
+                        <i class="fas fa-image fa-3x mb-3"></i>
+                        <p class="mb-0">No Image</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Basic Information Card -->
+            <div class="card border-0 rounded-3 shadow-sm mb-4">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="fas fa-info-circle me-2"></i>基本情報
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="fas fa-cube me-2 text-primary"></i>商品名
+                            </label>
+                            <div class="form-control-static fs-5 fw-bold">{{ item.name }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="fas fa-tags me-2 text-primary"></i>カテゴリ
+                            </label>
+                            <div class="form-control-static">{{ item.product_type.full_path }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="fas fa-star me-2 text-primary"></i>ブランド
+                            </label>
+                            <div class="form-control-static">{{ item.brand|default:"未入力" }}</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="fas fa-palette me-2 text-primary"></i>色番/カラー
+                            </label>
+                            <div class="form-control-static">{{ item.color_code|default:"未入力" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Information Card -->
+            <div class="card border-0 rounded-3 shadow-sm mb-4">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="fas fa-calendar-alt me-2"></i>日付情報
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="fas fa-calendar-plus me-2 text-primary"></i>開封日
+                            </label>
+                            <div class="form-control-static">{{ item.opened_on|date:"Y年m月d日" }}</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="fas fa-clock me-2 text-primary"></i>使用期限
+                            </label>
+                            <div class="form-control-static">{{ item.expires_on|date:"Y年m月d日" }}</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold text-secondary">
+                                <i class="fas fa-hourglass-half me-2 text-primary"></i>残日数
+                            </label>
+                            <div class="form-control-static">
+                                {% if days_remaining < 0 %} <span class="text-danger fw-bold">{{ days_abs }}日経過</span>
+                                    {% else %}
+                                    <span class="fw-bold">あと{{ days_remaining }}日</span>
+                                    {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Badge -->
+            <div class="card border-0 rounded-3 shadow-sm mb-4">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="fas fa-exclamation-triangle me-2"></i>期限リスク
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <span class="badge risk-badge risk-{{ risk_class }} fs-6 px-3 py-2 me-3">
+                            {{ risk_text }}
+                        </span>
+                        {% if risk_level == 'expired' %}
+                        <span class="text-danger">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            期限が過ぎています。使用を控えることをお勧めします。
+                        </span>
+                        {% elif risk_level == 'critical' %}
+                        <span class="text-warning">
+                            <i class="fas fa-clock me-1"></i>
+                            期限が近づいています。早めの使用をお勧めします。
+                        </span>
+                        {% elif risk_level == 'warning' %}
+                        <span class="text-info">
+                            <i class="fas fa-info-circle me-1"></i>
+                            期限まで2週間を切りました。
+                        </span>
+                        {% elif risk_level == 'caution' %}
+                        <span class="text-primary">
+                            <i class="fas fa-calendar me-1"></i>
+                            期限まで1ヶ月を切りました。
+                        </span>
+                        {% else %}
+                        <span class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            まだ十分に期限があります。
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Display -->
+            <div class="card border-0 rounded-3 shadow-sm mb-4">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="fas fa-toggle-on me-2"></i>ステータス
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        {% if item.status == 'using' %}
+                        <span class="badge bg-success fs-6 px-3 py-2 me-3">
+                            <i class="fas fa-play me-1"></i>使用中
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary fs-6 px-3 py-2 me-3">
+                            <i class="fas fa-stop me-1"></i>使用終了
+                        </span>
+                        {% if item.finished_at %}
+                        <span class="text-muted">使用終了日: {{ item.finished_at|date:"Y年m月d日" }}</span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Memo -->
+            {% if item.memo %}
+            <div class="card border-0 rounded-3 shadow-sm mb-4">
+                <div class="card-header bg-light border-0 py-3">
+                    <h5 class="card-title mb-0 text-primary">
+                        <i class="fas fa-sticky-note me-2"></i>メモ
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="form-control-static">
+                        {{ item.memo|linebreaks }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 mt-4 mb-5">
+                <a href="#" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-edit me-2"></i>編集
+                </a>
+                <a href="#" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="fas fa-list me-2"></i>一覧に戻る
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

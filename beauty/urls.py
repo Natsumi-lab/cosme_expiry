@@ -10,5 +10,6 @@ urlpatterns = [
     
     # Items
     path('items/new/', views.item_new, name='item_new'),
-    # path('items/', views.item_list, name='item_list'),  # 後で実装
+    path('items/<int:id>/', views.item_detail, name='item_detail'),
+    path('items/', views.item_list, name='item_list'), 
 ]

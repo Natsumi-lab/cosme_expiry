@@ -7,7 +7,7 @@
     --dark-color: #000000;
     --text-muted: #6c757d;
     --white: #ffffff;
-    --success: #22C55E;
+    --fine: #22C55E;
     /* 鮮やかな緑・明るめ（期限30日以内） */
     --warning: #FDE047;
     /* 明るい黄色・最も明るい（期限7日以内） */
@@ -505,7 +505,7 @@
 }
 
 .expiry-status.safe {
-    background-color: var(--success);
+    background-color: var(--fine);
     color: var(--white);
 }
 
@@ -767,4 +767,63 @@ footer h6 {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--secondary-color);
+}
+
+/* アイテム詳細ページ用スタイル */
+.item-detail-image {
+    max-width: 300px;
+    max-height: 300px;
+}
+
+.no-image-placeholder {
+    color: var(--text-muted);
+}
+
+.form-control-static {
+    padding: 0.375rem 0;
+    font-size: 1rem;
+    color: #212529;
+    border-bottom: 1px solid #e9ecef;
+    min-height: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.fs-5 {
+    color: #2c3e50;
+}
+
+/* Risk Badge Styles - 既存のCSS変数を使用 */
+.risk-badge {
+    border-radius: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.risk-fine {
+    background-color: var(--fine);
+    color: var(--white);
+}
+
+.risk-warning {
+    background-color: var(--warning);
+    color: var(--dark-color);
+}
+
+.risk-danger {
+    background-color: var(--danger);
+    color: var(--white);
+}
+
+.risk-warning-orange {
+    background-color: var(--warning-orange);
+    color: var(--white);
+}
+
+.risk-safety {
+    background-color: var(--safety);
+    color: var(--white);
 }
