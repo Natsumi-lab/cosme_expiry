@@ -1,0 +1,22 @@
+# コスメ期限管理アプリ - 依存関係
+# Python 3.13+ 対応
+
+# Core Django
+Django==5.2.4
+
+# Django dependencies (automatically installed with Django)
+asgiref==3.9.1
+sqlparse==0.5.3
+tzdata==2025.2
+
+# Future dependencies (予定)
+# openai>=1.0.0  # LLM integration
+# Pillow>=10.0.0  # Image processing
+# requests>=2.31.0  # API calls
+# python-dotenv>=1.0.0  # Environment variables
+
+# Development dependencies (開発環境のみ)
+# pytest-django>=4.8.0  # Testing
+# coverage>=7.0.0  # Code coverage
+# black>=23.0.0  # Code formatting
+# flake8>=6.0.0  # Linting

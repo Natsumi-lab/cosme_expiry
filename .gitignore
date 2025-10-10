@@ -350,3 +350,81 @@ db.sqlite3
 # データベースバックアップ
 *.sql.bak
 database_backup/
+
+# =============================================================================
+# 追加項目 (2024年10月更新)
+# =============================================================================
+
+# Python bytecode
+*.pyc
+
+# Django migrations cache
+*/migrations/__pycache__/
+
+# 一時的なスクリプトファイル
+create_demo_user.py
+temp_scripts/
+test_scripts/
+
+# 開発用ダンプファイル
+fixtures/test_data.json
+sample_users.json
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ローカル開発用ファイル
+local_test.py
+debug_*.py
+temp_*.py
+
+# エラーログ
+error.log
+debug.log
+
+# メモファイル
+MEMO.md
+memo.txt
+notes.txt
