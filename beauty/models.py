@@ -69,9 +69,10 @@ class Item(BaseModel):
     brand = models.CharField(max_length=100, blank=True, verbose_name="ブランド")
     color_code = models.CharField(max_length=50, blank=True, verbose_name="色番/カラー")
     image_url = models.CharField(max_length=500, blank=True, verbose_name="画像URL")
+    image = models.ImageField(upload_to='items/', blank=True, null=True, verbose_name="商品画像")
     
     opened_on = models.DateField(verbose_name="開封日")
-    expires_on = models.DateField(verbose_name="消費期限")
+    expires_on = models.DateField(verbose_name="使用期限")
     expires_overridden = models.BooleanField(default=False, verbose_name="期限手動上書き")
     
     STATUS_CHOICES = [

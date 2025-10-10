@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from .models import Item, Taxon
 import re
 
 
@@ -128,3 +129,118 @@ class SignInForm(forms.Form):
             if '@' not in username or '.' not in username:
                 raise ValidationError('有効なメールアドレスを入力してください。')
         return username
+
+
+class ItemForm(forms.ModelForm):
+    """アイテム登録フォーム"""
+    
+    product_type = forms.ModelChoiceField(
+        queryset=Taxon.objects.filter(children__isnull=True),  # 葉ノードのみ
+        widget=forms.Select(attrs={
+            'class': 'form-select',
+            'id': 'product_type'
+        }),
+        label='商品カテゴリ',
+        help_text='最も詳細なカテゴリを選択してください',
+        empty_label='カテゴリを選択してください'
+    )
+    
+    name = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '商品名を入力してください',
+            'id': 'name'
+        }),
+        label='商品名'
+    )
+    
+    brand = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'ブランド名を入力してください',
+            'id': 'brand'
+        }),
+        label='ブランド名'
+    )
+    
+    color_code = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': '色番やカラー名を入力してください',
+            'id': 'color_code'
+        }),
+        label='色番/カラー'
+    )
+    
+    image = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'id': 'image',
+            'accept': 'image/*'
+        }),
+        label='商品画像',
+        help_text='JPEG, PNG形式の画像をアップロードできます'
+    )
+    
+    opened_on = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'id': 'opened_on'
+        }),
+        label='開封日'
+    )
+    
+    expires_on = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'type': 'date',
+            'id': 'expires_on'
+        }),
+        label='使用期限'
+    )
+    
+    memo = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'メモがあれば入力してください',
+            'id': 'memo',
+            'rows': 4
+        }),
+        label='メモ'
+    )
+    
+    class Meta:
+        model = Item
+        fields = ['product_type', 'name', 'brand', 'color_code', 'opened_on', 'expires_on', 'memo']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # カテゴリの選択肢を階層的に表示
+        leaf_taxons = Taxon.objects.filter(children__isnull=True).select_related('parent')
+        choices = [('', 'カテゴリを選択してください')]
+        
+        for taxon in leaf_taxons:
+            display_name = taxon.full_path or taxon.name
+            choices.append((taxon.pk, display_name))
+        
+        self.fields['product_type'].choices = choices
+    
+    def clean(self):
+        """フォーム全体のバリデーション"""
+        cleaned_data = super().clean()
+        opened_on = cleaned_data.get('opened_on')
+        expires_on = cleaned_data.get('expires_on')
+        
+        if opened_on and expires_on:
+            if opened_on > expires_on:
+                raise ValidationError('使用期限は開封日以降の日付を設定してください。')
+        
+        return cleaned_data
