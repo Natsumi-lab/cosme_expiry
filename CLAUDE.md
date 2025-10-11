@@ -34,6 +34,10 @@ python manage.py check
 python manage.py test
 python manage.py shell
 python manage.py collectstatic
+
+# Code quality (when dependencies are added)
+# python -m black .  # Code formatting
+# python -m flake8  # Linting
 ```
 
 ### Database Management
@@ -133,10 +137,17 @@ js/
 
 ### LLM Integration Framework
 
-**Current Implementation** (`beauty/views.py:68-106`):
+**Current Implementation** (`beauty/views.py:163-201`):
 - `process_llm_suggestion()`: Framework for LLM API calls
 - `confirm_llm_suggestion()`: User confirmation handling
 - Logs all AI suggestions and user selections for learning
+
+### Forms Architecture
+
+**Form Classes** (`beauty/forms.py`):
+- `SignUpForm`: User registration with email validation and password strength checks
+- `SignInForm`: Custom email-based authentication form
+- `ItemForm`: Product registration form with hierarchical category selection (leaf nodes only)
 
 ## Configuration Details
 
@@ -153,6 +164,18 @@ js/
 - Main URLs in `cosme_expiry_app/urls.py`
 - App-specific URLs in `beauty/urls.py`
 - Admin interface available at `/admin/`
+
+**Available Routes** (`beauty/urls.py`):
+```
+/                    # Home (login required)
+/signup/             # User registration
+/signin/             # User login
+/signout/            # User logout
+/items/              # Item list view
+/items/new/          # Create new item
+/items/<id>/         # Item detail view
+/admin/              # Django admin interface
+```
 
 ## Development Environment
 
@@ -172,12 +195,31 @@ js/
 - User registration system (`SignUpView` in `beauty/views.py:23-64`)
 
 **Pending Implementation:**
-- CRUD operations for cosmetic items (models exist, views needed)
+- Complete CRUD operations for cosmetic items (basic create/detail views exist, need edit/delete)
+- Item list view implementation (URL exists, view needs completion)
 - Notification scheduling logic (models exist, scheduling needed)
 - Complete LLM API integration with OpenAI
-- Frontend login/logout system (Django auth configured)
 - Statistics dashboard backend (Chart.js templates ready)
 - Advanced item search and filtering
+- Image processing with Pillow (dependency commented in requirements.txt)
+
+## Development Workflow
+
+### Authentication System
+- Email-based user authentication (email field used instead of username for login)
+- Custom forms with Bootstrap styling and validation
+- Login required for all item-related operations
+- User ownership enforced on all item views (security via `user=request.user` filtering)
+
+### Data Validation
+- Form-level validation in `beauty/forms.py`
+- Model-level constraints in `beauty/models.py`
+- Admin interface validation for Taxon leaf-node restrictions
+
+### Error Handling
+- Permission denied for cross-user item access (`beauty/views.py:247-257`)
+- 404 handling for non-existent items
+- Form validation with user-friendly error messages
 
 ## Coding Standards
 
@@ -186,10 +228,21 @@ js/
 - **No Inline Scripts**: All JavaScript in separate files
 - **Responsive Design**: Bootstrap mobile-first approach
 - **Accessibility**: Proper ARIA labels and semantic HTML
+- **Security**: User ownership validation on all item operations
+- **Internationalization**: Japanese language with Asia/Tokyo timezone
+
+## Testing
+
+- **No test framework configured yet**
+- Django's built-in testing framework available via `python manage.py test`
+- Future dependencies planned: pytest-django, coverage (commented in requirements.txt)
+- Manual testing through Django admin interface at `/admin/`
+- Use `python manage.py check` for Django system checks
 
 ## Deployment Notes
 
 - **Target Platform**: PythonAnywhere
-- **External APIs**: OpenAI API for LLM functionality
+- **External APIs**: OpenAI API for LLM functionality (not yet implemented)
 - **Image Storage**: Local storage initially, cloud storage (S3/Cloudinary) planned
 - **Security**: Development secret key present (needs production change)
+- **Media Files**: Configured but upload handling needs completion
