@@ -471,3 +471,52 @@ temp_uploads/
 # 期限切れレポート出力
 expiry_reports/
 notification_logs/
+
+# =============================================================================
+# 最新追加項目 (2024年実装更新)
+# =============================================================================
+
+# Pillow関連の一時ファイル
+*.pillow_cache
+.pillow/
+
+# Django メディアファイル（ユーザーアップロード画像）
+media/
+/media/
+media/*
+!media/.gitkeep
+
+# 差分チェック一時ファイル
+.form_diff_cache/
+
+# バックエンドテスト用データ
+test_items/
+test_uploads/
+
+# Django収集済み静的ファイル 
+collected_static/
+
+# ローカル開発用のスクリーンショット・デザインファイル
+screenshots/
+design_mockups/
+*.sketch
+*.fig
+*.xd
+
+# Windows固有の一時ファイル（Windows開発環境用）
+*.tmp
+Thumbs.db
+*.lnk
+
+# requirements.txtの更新時の一時ファイル
+requirements.txt.bak
+requirements_backup.txt
+
+# LLM機能テスト用APIキー（本番では環境変数使用）
+test_openai_key.txt
+.test_env
+
+# 開発中の実験的機能
+experimental/
+prototype/
+draft_features/
