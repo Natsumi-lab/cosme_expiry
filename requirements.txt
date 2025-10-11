@@ -9,9 +9,11 @@ asgiref==3.9.1
 sqlparse==0.5.3
 tzdata==2025.2
 
+# Image processing (アイテム編集機能で使用)
+Pillow>=11.3.0
+
 # Future dependencies (予定)
 # openai>=1.0.0  # LLM integration
-# Pillow>=10.0.0  # Image processing
 # requests>=2.31.0  # API calls
 # python-dotenv>=1.0.0  # Environment variables
 
