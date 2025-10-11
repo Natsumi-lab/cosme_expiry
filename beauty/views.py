@@ -244,6 +244,69 @@ def item_list(request):
 
 
 @login_required
+def item_edit(request, id):
+    """アイテム編集ビュー"""
+    # ログインユーザーのアイテムのみ取得（セキュリティ対策）
+    try:
+        item = Item.objects.get(id=id, user=request.user)
+    except Item.DoesNotExist:
+        other_user_item = Item.objects.filter(id=id).first()
+        if other_user_item:
+            raise PermissionDenied("このアイテムを編集する権限がありません。")
+        else:
+            raise Http404("アイテムが見つかりません。")
+    
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            # 差分チェック
+            has_changes = False
+            for field_name in form.fields:
+                original_value = getattr(item, field_name)
+                new_value = form.cleaned_data[field_name]
+                
+                # 特別な処理が必要なフィールド
+                if field_name == 'product_type':
+                    if original_value.id != new_value.id:
+                        has_changes = True
+                        break
+                elif field_name == 'image':
+                    if new_value != original_value:
+                        has_changes = True
+                        break
+                elif original_value != new_value:
+                    has_changes = True
+                    break
+            
+            if not has_changes:
+                messages.info(request, '変更はありません。')
+                return render(request, 'items/edit.html', {
+                    'form': form,
+                    'item': item,
+                    'page_title': f'アイテム編集 - {item.name}',
+                    'page_description': f'{item.name}の情報を編集します'
+                })
+            
+            # 変更がある場合は保存
+            updated_item = form.save()
+            messages.success(request, 'アイテム情報を更新しました。')
+            return redirect('beauty:item_detail', id=updated_item.id)
+        else:
+            messages.error(request, 'アイテムの更新に失敗しました。入力内容を確認してください。')
+    else:
+        form = ItemForm(instance=item)
+    
+    context = {
+        'form': form,
+        'item': item,
+        'page_title': f'アイテム編集 - {item.name}',
+        'page_description': f'{item.name}の情報を編集します'
+    }
+    
+    return render(request, 'items/edit.html', context)
+
+
+@login_required
 def item_detail(request, id):
     """アイテム詳細ビュー"""
     # ログインユーザーのアイテムのみ取得（セキュリティ対策）
