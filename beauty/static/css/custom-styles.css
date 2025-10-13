@@ -863,3 +863,220 @@ footer h6 {
     border-color: #d3859c;
     box-shadow: 0 0 0 0.2rem rgba(211, 133, 156, 0.25);
 }
+
+/* === アイテム一覧ページ用スタイル === */
+
+/* カスタムタブ */
+.nav-tabs-custom {
+    border-bottom: 2px solid #e9ecef;
+}
+
+.nav-tabs-custom .nav-link {
+    border: none;
+    border-radius: 8px 8px 0 0;
+    padding: 1rem 1.5rem;
+    margin: 0 0.25rem;
+    background-color: transparent;
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs-custom .nav-link:hover {
+    background-color: rgba(211, 133, 156, 0.1);
+    color: var(--primary-color);
+    border-color: transparent;
+}
+
+.nav-tabs-custom .nav-link.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.nav-tabs-custom .nav-link .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* アイテムカード（一覧表示用） */
+.item-card {
+    border: 1px solid rgba(211, 133, 156, 0.2);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.item-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(211, 133, 156, 0.2);
+}
+
+/* アイテム画像 */
+.item-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px 0 0 8px;
+}
+
+.item-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #f8f9fa;
+    border-radius: 8px 0 0 8px;
+    min-height: 120px;
+}
+
+/* カテゴリバッジ */
+.badge-category {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* ステータスバッジ */
+.badge-status-using {
+    background-color: var(--fine);
+    color: var(--white);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.badge-status-finished {
+    background-color: var(--text-muted);
+    color: var(--white);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* 期限リスクスタイル */
+.expiry-expired {
+    background-color: var(--danger);
+    color: var(--white);
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.expiry-critical {
+    background-color: var(--warning);
+    color: var(--dark-color);
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.expiry-warning {
+    background-color: var(--warning-orange);
+    color: var(--white);
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.expiry-caution {
+    background-color: var(--fine);
+    color: var(--white);
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.expiry-safe {
+    background-color: var(--safety);
+    color: var(--white);
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* 検索・フィルタエリア */
+.filter-section {
+    background: linear-gradient(135deg, rgba(211, 133, 156, 0.05), rgba(240, 213, 187, 0.05));
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* 空状態 */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    color: rgba(211, 133, 156, 0.3);
+    margin-bottom: 1rem;
+}
+
+/* フィルタドロワー */
+.filter-drawer {
+    background-color: rgba(248, 249, 250, 0.8);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 768px) {
+    .nav-tabs-custom .nav-link {
+        padding: 0.75rem 1rem;
+        margin: 0 0.125rem;
+        font-size: 0.9rem;
+    }
+    
+    .nav-tabs-custom .nav-link .badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .item-card .card-body {
+        padding: 1rem;
+    }
+    
+    .item-image-placeholder {
+        min-height: 100px;
+    }
+    
+    .filter-section {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-tabs-custom {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .nav-tabs-custom::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .nav-tabs-custom .nav-link {
+        white-space: nowrap;
+        min-width: fit-content;
+    }
+    
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+}

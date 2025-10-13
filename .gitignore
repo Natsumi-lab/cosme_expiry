@@ -520,3 +520,63 @@ test_openai_key.txt
 experimental/
 prototype/
 draft_features/
+
+# =============================================================================
+# アイテム一覧機能関連 (2024年10月追加)
+# =============================================================================
+
+# フィルタ機能のキャッシュファイル
+.filter_cache/
+taxon_cache.json
+
+# AJAX API レスポンスキャッシュ
+.api_cache/
+.taxon_api_cache/
+
+# アイテム一覧のソート・フィルタ設定の一時保存
+user_preferences/
+filter_settings.json
+
+# ページネーション用一時ファイル
+.pagination_cache/
+
+# 検索インデックス一時ファイル
+search_index/
+.search_cache/
+
+# カテゴリ階層の再構築用一時ファイル
+taxon_rebuild/
+category_temp/
+
+# アイテム画像サムネイル生成キャッシュ
+.thumbnail_cache/
+thumbnails/
+resized_images/
+
+# ユーザーアップロード画像の一時処理ファイル
+.image_processing/
+temp_image_uploads/
+
+# JavaScriptのソースマップ (本番では不要)
+*.js.map
+beauty/static/js/*.map
+
+# CSS プリプロセッサの出力ファイル
+beauty/static/css/*.css.map
+*.scss.map
+
+# 開発用のモックデータ
+mock_items.json
+test_categories.json
+sample_taxons.sql
+
+# パフォーマンステスト結果
+performance_logs/
+load_test_results/
+
+# =============================================================================
+# Claude Code 作業ファイル
+# =============================================================================
+.claude_workspace/
+claude_analysis/
+claude_todo.json

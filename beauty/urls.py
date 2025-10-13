@@ -12,5 +12,8 @@ urlpatterns = [
     path('items/new/', views.item_new, name='item_new'),
     path('items/<int:id>/edit/', views.item_edit, name='item_edit'),
     path('items/<int:id>/', views.item_detail, name='item_detail'),
-    path('items/', views.item_list, name='item_list'), 
+    path('items/', views.item_list, name='item_list'),
+    
+    # API
+    path('api/taxons/', views.api_taxons, name='api_taxons'), 
 ]

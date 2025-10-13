@@ -39,7 +39,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#!">
+                            <a class="nav-link" href="{% url 'beauty:item_list' %}">
                                 <i class="fas fa-list me-1"></i>アイテム一覧
                             </a>
                         </li>
@@ -143,12 +143,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
+                    <a class="nav-link mobile-nav-link" href="{% url 'beauty:item_list' %}" data-bs-dismiss="offcanvas">
                         <i class="fas fa-list me-2"></i>アイテム一覧
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link mobile-nav-link" href="#!" data-bs-dismiss="offcanvas">
+                    <a class="nav-link mobile-nav-link" href="{% url 'beauty:item_new' %}" data-bs-dismiss="offcanvas">
                         <i class="fas fa-plus me-2"></i>アイテム追加
                     </a>
                 </li>

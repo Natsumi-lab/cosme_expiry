@@ -238,9 +238,131 @@ def item_new(request):
     
     return render(request, 'items/new.html', context)
 
+@login_required
 def item_list(request):
-    items = Item.objects.filter(user=request.user)
-    return render(request, 'beauty/items/item_list.html', {'items': items})
+    """アイテム一覧ビュー"""
+    from datetime import date
+    from django.db.models import Q
+    from django.http import JsonResponse
+    
+    # ベースクエリ
+    items = Item.objects.filter(user=request.user).select_related('product_type')
+    
+    # フィルタパラメータ取得
+    tab = request.GET.get('tab', 'all')  # 期限タブ
+    search = request.GET.get('search', '').strip()  # 検索
+    product_type = request.GET.get('product_type', '')  # カテゴリ
+    status = request.GET.get('status', '')  # ステータス
+    sort = request.GET.get('sort', 'expires_on')  # ソート
+    
+    # 検索フィルタ
+    if search:
+        items = items.filter(name__icontains=search)
+    
+    # カテゴリフィルタ（指定されたカテゴリとその子孫を含む）
+    if product_type:
+        try:
+            taxon = Taxon.objects.get(id=product_type)
+            # 自身と子孫のTaxonIDを取得
+            descendant_ids = [product_type]
+            def get_descendants(parent_id):
+                children = Taxon.objects.filter(parent_id=parent_id).values_list('id', flat=True)
+                for child_id in children:
+                    descendant_ids.append(child_id)
+                    get_descendants(child_id)
+            get_descendants(product_type)
+            items = items.filter(product_type_id__in=descendant_ids)
+        except Taxon.DoesNotExist:
+            pass
+    
+    # ステータスフィルタ
+    if status in ['using', 'finished']:
+        items = items.filter(status=status)
+    
+    # 期限タブフィルタ
+    today = date.today()
+    if tab == 'expired':
+        items = items.filter(expires_on__lt=today)
+    elif tab == 'week':
+        from datetime import timedelta
+        items = items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=7))
+    elif tab == 'biweek':
+        from datetime import timedelta
+        items = items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=14))
+    elif tab == 'month':
+        from datetime import timedelta
+        items = items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=30))
+    elif tab == 'safe':
+        from datetime import timedelta
+        items = items.filter(expires_on__gt=today + timedelta(days=30))
+    
+    # ソート
+    if sort == 'expires_on':
+        items = items.order_by('expires_on')
+    elif sort == '-expires_on':
+        items = items.order_by('-expires_on')
+    elif sort == '-created_at':
+        items = items.order_by('-created_at')
+    elif sort == 'created_at':
+        items = items.order_by('created_at')
+    else:
+        items = items.order_by('expires_on')
+    
+    # 各アイテムの残日数とリスク計算
+    today = date.today()
+    items_with_data = []
+    for item in items:
+        days_remaining = (item.expires_on - today).days
+        
+        if days_remaining < 0:
+            risk_level = 'expired'
+            risk_text = '期限切れ'
+        elif days_remaining <= 7:
+            risk_level = 'critical'
+            risk_text = '期限7日以内'
+        elif days_remaining <= 14:
+            risk_level = 'warning'
+            risk_text = '期限14日以内'
+        elif days_remaining <= 30:
+            risk_level = 'caution'
+            risk_text = '期限30日以内'
+        else:
+            risk_level = 'safe'
+            risk_text = '余裕あり'
+        
+        items_with_data.append({
+            'item': item,
+            'days_remaining': days_remaining,
+            'days_remaining_abs': abs(days_remaining),
+            'risk_level': risk_level,
+            'risk_text': risk_text
+        })
+    
+    # 各タブのアイテム数を計算
+    all_items = Item.objects.filter(user=request.user)
+    from datetime import timedelta
+    
+    tab_counts = {
+        'all': all_items.count(),
+        'expired': all_items.filter(expires_on__lt=today).count(),
+        'week': all_items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=7)).count(),
+        'biweek': all_items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=14)).count(),
+        'month': all_items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=30)).count(),
+        'safe': all_items.filter(expires_on__gt=today + timedelta(days=30)).count(),
+    }
+    
+    context = {
+        'items_with_data': items_with_data,
+        'tab_counts': tab_counts,
+        'current_tab': tab,
+        'current_search': search,
+        'current_status': status,
+        'current_sort': sort,
+        'page_title': 'アイテム一覧',
+        'page_description': '登録したコスメアイテムの一覧を表示します'
+    }
+    
+    return render(request, 'items/item_list.html', context)
 
 
 @login_required
@@ -358,3 +480,23 @@ def item_detail(request, id):
     }
     
     return render(request, 'items/detail.html', context)
+
+
+@login_required
+def api_taxons(request):
+    """Taxon階層取得API"""
+    from django.http import JsonResponse
+    
+    parent_id = request.GET.get('parent')
+    
+    if parent_id:
+        try:
+            taxons = Taxon.objects.filter(parent_id=parent_id).order_by('name')
+        except:
+            return JsonResponse({'error': 'Invalid parent ID'}, status=400)
+    else:
+        # 親がnullのTaxon（大カテゴリ）を取得
+        taxons = Taxon.objects.filter(parent__isnull=True).order_by('name')
+    
+    data = [{'id': t.id, 'name': t.name} for t in taxons]
+    return JsonResponse(data, safe=False)

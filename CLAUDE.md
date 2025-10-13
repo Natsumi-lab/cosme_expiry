@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a cosmetic expiry tracking application built with Django. Users can register cosmetic products with their opening dates and automatically receive expiry calculations and notifications. The app integrates LLM (ChatGPT API) to auto-suggest categories and provide hygiene risk assessments and usage improvement advice. This project serves as a portfolio demonstrating practical design, implementation, and frontend skills.
+This is a cosmetic expiry tracking application built with Django. Users can register cosmetic products with their opening dates and automatically receive expiry calculations and notifications. The app integrates LLM (ChatGPT API) to auto-suggest categories and provide hygiene risk assessments and usage improvement advice.
 
 **Key Features:**
 - Hierarchical product categorization system (Taxon model)
@@ -34,23 +34,6 @@ python manage.py check
 python manage.py test
 python manage.py shell
 python manage.py collectstatic
-
-# Code quality (when dependencies are added)
-# python -m black .  # Code formatting
-# python -m flake8  # Linting
-```
-
-### Database Management
-
-```bash
-# Check migration status
-python manage.py showmigrations
-
-# Create migrations for specific app
-python manage.py makemigrations beauty
-
-# Apply specific migrations
-python manage.py migrate beauty
 ```
 
 ### Virtual Environment
@@ -68,86 +51,53 @@ pip freeze > requirements.txt
 
 ## Architecture Overview
 
-### Project Structure
+### Core Models (`beauty/models.py`)
 
-Single Django app architecture:
-- **Main Project**: `cosme_expiry_app/` - Settings, main URLs, WSGI/ASGI configuration
-- **Beauty App**: `beauty/` - Contains all business logic
-
-### Core Models Architecture
-
-The data model is built around four main entities:
-
-1. **Taxon** (`beauty/models.py:14-49`): Hierarchical category system
+1. **Taxon** (lines 14-49): Hierarchical category system
    - Self-referencing tree structure for cosmetic categories
    - Auto-calculates `depth` and `full_path` on save
    - `is_leaf` property determines if category can be assigned to items
    - Used for organizing products (e.g., Makeup > Lips > Lip Gloss)
 
-2. **Item** (`beauty/models.py:52-127`): Main product entity
-   - Links to User via ForeignKey
-   - Uses Taxon for hierarchical categorization
+2. **Item** (lines 52-127): Main product entity
+   - Links to User via ForeignKey with ownership security (`user=request.user` filtering)
+   - Uses Taxon for hierarchical categorization via `product_type` field
    - Tracks opening date, expiry date, and status ('using'/'finished')
    - Risk assessment levels ('low'/'mid'/'high') for alerts
-   - Properties: `main_category`, `middle_category` for navigation
+   - Properties: `main_category`, `middle_category` for navigation breadcrumbs
 
-3. **Notification** (`beauty/models.py:130-153`): Automated alert system
-   - Links to User and Item
+3. **Notification** (lines 130-153): Automated alert system
    - Types: 30-day, 14-day, 7-day warnings, and overdue alerts
    - Scheduled notification system with read status tracking
 
-4. **LlmSuggestionLog** (`beauty/models.py:156-201`): AI integration tracking
+4. **LlmSuggestionLog** (lines 156-201): AI integration tracking
    - Records LLM suggestions vs user choices for learning
-   - Tracks category, product name, and brand suggestions
    - Links both suggested and chosen taxons for analysis
 
-### Admin Interface Configuration
+### Authentication System
 
-Fully configured admin interface (`beauty/admin.py`) with:
-- Custom filters and search fields for all models
-- Taxon admin restricts Item.product_type to leaf nodes only
-- Date hierarchy for notifications and items
+Email-based authentication instead of username:
+- `SignUpForm` (`beauty/forms.py:9-96`): Custom registration with email validation and password strength checks
+- `SignInView` (`beauty/views.py:74-133`): Email lookup for login authentication
+- All item operations require login and enforce user ownership for security
+
+### Admin Interface (`beauty/admin.py`)
+
+- Taxon admin restricts Item.product_type to leaf nodes only (line 28)
 - Advanced filtering by category hierarchy levels
+- Date hierarchy for notifications and items
 
 ### Frontend Architecture
 
-**Template System** (`beauty/templates/`):
-- `base.html`: Responsive Bootstrap layout with mobile-first design
+**Template System**:
+- `base.html`: Responsive Bootstrap layout with Chart.js integration
 - Navigation with offcanvas mobile menu
-- Chart.js integration for statistics display
-- Font Awesome icons throughout
-
-**Static File Organization** (`beauty/static/`):
-```
-css/
-├── styles.css          # Main styling
-└── custom-styles.css   # Custom overrides
-images/
-├── favicon.ico
-└── header.jpg
-js/
-└── scripts.js          # Main JavaScript
-```
+- Statistics dashboard with sample data (`beauty/static/js/scripts.js`)
 
 **Design System**:
 - Primary: `#f8dec6` (Light Cream)
-- Secondary: #f0d5bb
 - Accent: `#d3859c` (Dusty Rose)
 - Bootstrap 5.2.3 with responsive breakpoints
-
-### LLM Integration Framework
-
-**Current Implementation** (`beauty/views.py:163-201`):
-- `process_llm_suggestion()`: Framework for LLM API calls
-- `confirm_llm_suggestion()`: User confirmation handling
-- Logs all AI suggestions and user selections for learning
-
-### Forms Architecture
-
-**Form Classes** (`beauty/forms.py`):
-- `SignUpForm`: User registration with email validation and password strength checks
-- `SignInForm`: Custom email-based authentication form
-- `ItemForm`: Product registration form with hierarchical category selection (leaf nodes only)
 
 ## Configuration Details
 
@@ -155,94 +105,78 @@ js/
 
 - **Language**: Japanese (`ja`) with Asia/Tokyo timezone
 - **Database**: SQLite for development
-- **Static Files**: Configured to serve from `beauty/static/`
+- **Static Files**: Served from `beauty/static/`
 - **Templates**: Located in `beauty/templates/`
-- **Virtual Environment**: Uses `venv/` directory (not `myenv/`)
+- **Virtual Environment**: Uses `venv/` directory
 
-### URL Configuration
+### URL Configuration (`beauty/urls.py`)
 
-- Main URLs in `cosme_expiry_app/urls.py`
-- App-specific URLs in `beauty/urls.py`
-- Admin interface available at `/admin/`
-
-**Available Routes** (`beauty/urls.py`):
 ```
-/                    # Home (login required)
-/signup/             # User registration
-/signin/             # User login
-/signout/            # User logout
-/items/              # Item list view
-/items/new/          # Create new item
-/items/<id>/         # Item detail view
-/admin/              # Django admin interface
+/                         # Home (login required)
+/signup/                  # User registration  
+/signin/                  # User login
+/signout/                 # User logout
+/items/                   # Item list view
+/items/new/               # Create new item
+/items/<id>/              # Item detail view
+/items/<id>/edit/         # Edit item
+/admin/                   # Django admin interface
 ```
+
+## View Implementation Patterns
+
+### Security Pattern
+All item views follow this pattern (`beauty/views.py:247-257`, `beauty/views.py:313-320`):
+```python
+try:
+    item = Item.objects.get(id=id, user=request.user)
+except Item.DoesNotExist:
+    other_user_item = Item.objects.filter(id=id).first()
+    if other_user_item:
+        raise PermissionDenied("権限なし")
+    else:
+        raise Http404("見つかりません")
+```
+
+### Form Validation
+- Cross-field validation in `ItemForm.clean()` (`beauty/forms.py:236-245`)
+- Email uniqueness check in `SignUpForm.clean_email()` (`beauty/forms.py:67-72`)
+- Password strength validation (`beauty/forms.py:74-87`)
+
+## LLM Integration Framework
+
+**Framework Functions** (`beauty/views.py:163-201`):
+- `process_llm_suggestion()`: Framework for LLM API calls with Taxon suggestions
+- `confirm_llm_suggestion()`: User confirmation handling and learning log
 
 ## Development Environment
 
-- **Python**: 3.13.5
+- **Python**: 3.13+
 - **Django**: 5.2.4
 - **Frontend**: Bootstrap 5.2.3, Font Awesome 6.0.0, Chart.js
 - **Database**: SQLite (development)
-- **Virtual Environment**: `venv/` (Windows: `venv\Scripts\activate`)
+- **Image Processing**: Pillow>=11.3.0
 
 ## Implementation Status
 
 **Completed:**
 - Complete data model structure with migrations applied
-- Fully functional admin interface with custom configurations
+- User authentication system with email-based login
+- Admin interface with hierarchical category restrictions
+- Item CRUD operations (create, detail, edit views)
+- Frontend templates with responsive design
 - LLM integration framework structure
-- Responsive frontend templates with mobile support
-- User registration system (`SignUpView` in `beauty/views.py:23-64`)
 
 **Pending Implementation:**
-- Complete CRUD operations for cosmetic items (basic create/detail views exist, need edit/delete)
-- Item list view implementation (URL exists, view needs completion)
+- Item list view implementation (URL exists, view needs completion at `beauty/views.py:241-243`)
 - Notification scheduling logic (models exist, scheduling needed)
 - Complete LLM API integration with OpenAI
-- Statistics dashboard backend (Chart.js templates ready)
-- Advanced item search and filtering
-- Image processing with Pillow (dependency commented in requirements.txt)
-
-## Development Workflow
-
-### Authentication System
-- Email-based user authentication (email field used instead of username for login)
-- Custom forms with Bootstrap styling and validation
-- Login required for all item-related operations
-- User ownership enforced on all item views (security via `user=request.user` filtering)
-
-### Data Validation
-- Form-level validation in `beauty/forms.py`
-- Model-level constraints in `beauty/models.py`
-- Admin interface validation for Taxon leaf-node restrictions
-
-### Error Handling
-- Permission denied for cross-user item access (`beauty/views.py:247-257`)
-- 404 handling for non-existent items
-- Form validation with user-friendly error messages
+- Statistics dashboard backend (Chart.js ready with sample data)
+- Image processing completion
 
 ## Coding Standards
 
-- **File Separation**: HTML, CSS, JavaScript must be in separate files
-- **No Inline Styles**: All styling through CSS files
-- **No Inline Scripts**: All JavaScript in separate files
-- **Responsive Design**: Bootstrap mobile-first approach
-- **Accessibility**: Proper ARIA labels and semantic HTML
+- **File Separation**: HTML, CSS, JavaScript in separate files (no inline styles/scripts)
 - **Security**: User ownership validation on all item operations
 - **Internationalization**: Japanese language with Asia/Tokyo timezone
-
-## Testing
-
-- **No test framework configured yet**
-- Django's built-in testing framework available via `python manage.py test`
-- Future dependencies planned: pytest-django, coverage (commented in requirements.txt)
-- Manual testing through Django admin interface at `/admin/`
-- Use `python manage.py check` for Django system checks
-
-## Deployment Notes
-
-- **Target Platform**: PythonAnywhere
-- **External APIs**: OpenAI API for LLM functionality (not yet implemented)
-- **Image Storage**: Local storage initially, cloud storage (S3/Cloudinary) planned
-- **Security**: Development secret key present (needs production change)
-- **Media Files**: Configured but upload handling needs completion
+- **Responsive Design**: Bootstrap mobile-first approach
