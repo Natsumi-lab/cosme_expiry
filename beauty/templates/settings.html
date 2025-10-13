@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4 px-lg-5">
+    <!-- Page Header -->
+    <div class="row gx-4 gx-lg-5 my-4 justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center">
+                <h1 class="display-5 fw-bolder text-dark mb-2">
+                    <i class="fas fa-cog text-primary me-3"></i>アカウント設定
+                </h1>
+                <p class="lead fw-normal text-muted mb-0">
+                    プロフィールと通知設定を管理できます
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="row">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Settings Form -->
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm settings-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-edit me-2"></i>アカウント情報
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Profile Settings Form -->
+                    <form method="post" class="mb-5" id="profileForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_profile">
+
+                        <h6 class="text-muted mb-3">基本情報</h6>
+
+                        <!-- Username Field -->
+                        <div class="mb-4">
+                            <label for="{{ settings_form.username.id_for_label }}" class="form-label fw-semibold">
+                                {{ settings_form.username.label }}
+                            </label>
+                            {{ settings_form.username }}
+                            {% if settings_form.username.help_text %}
+                            <div class="form-text">{{ settings_form.username.help_text }}</div>
+                            {% endif %}
+                            {% for error in settings_form.username.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Email Display (Read-only) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">メールアドレス</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                            <div class="form-text">メールアドレスは変更できません。</div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h6 class="text-muted mb-3">通知設定</h6>
+
+                        <!-- Notification Toggle -->
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                {{ settings_form.notifications_enabled }}
+                                <label class="form-check-label fw-semibold"
+                                    for="{{ settings_form.notifications_enabled.id_for_label }}">
+                                    {{ settings_form.notifications_enabled.label }}
+                                </label>
+                            </div>
+                            <div class="form-text">期限切れ通知をメールで受け取るかを設定できます。</div>
+                            {% for error in settings_form.notifications_enabled.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Profile Save Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn-outline-secondary w-50">
+                                <i class="fas fa-save me-2"></i>プロフィールを保存
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-5">
+
+                    <!-- Password Change Form -->
+                    <form method="post" id="passwordForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="change_password">
+
+                        <h6 class="text-muted mb-3">パスワード変更</h6>
+
+                        <!-- Current Password -->
+                        <div class="mb-3">
+                            <label for="{{ password_form.current_password.id_for_label }}"
+                                class="form-label fw-semibold">
+                                {{ password_form.current_password.label }}
+                            </label>
+                            {{ password_form.current_password }}
+                            {% for error in password_form.current_password.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="mb-3">
+                            <label for="{{ password_form.new_password1.id_for_label }}" class="form-label fw-semibold">
+                                {{ password_form.new_password1.label }}
+                            </label>
+                            {{ password_form.new_password1 }}
+                            {% if password_form.new_password1.help_text %}
+                            <div class="form-text">{{ password_form.new_password1.help_text }}</div>
+                            {% endif %}
+                            <div id="passwordStrength" class="mt-2"></div>
+                            {% for error in password_form.new_password1.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- New Password Confirmation -->
+                        <div class="mb-4">
+                            <label for="{{ password_form.new_password2.id_for_label }}" class="form-label fw-semibold">
+                                {{ password_form.new_password2.label }}
+                            </label>
+                            {{ password_form.new_password2 }}
+                            {% if password_form.new_password2.help_text %}
+                            <div class="form-text">{{ password_form.new_password2.help_text }}</div>
+                            {% endif %}
+                            <div id="passwordMatch" class="mt-2"></div>
+                            {% for error in password_form.new_password2.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Form-wide errors -->
+                        {% for error in password_form.non_field_errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                        {% endfor %}
+
+                        <!-- Password Change Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn-outline-secondary w-50" id="changePasswordBtn">
+                                <i class="fas fa-key me-2"></i>パスワードを変更
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-5">
+
+                    <!-- Links Section -->
+                    <div class="text-center settings-links">
+                        <h6 class="text-muted mb-3">関連リンク</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <a href="#" class="btn btn-outline-secondary w-100" target="_blank" rel="noopener">
+                                    <i class="fas fa-file-contract me-2"></i>利用規約
+                                </a>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <a href="#" class="btn btn-outline-secondary w-100" target="_blank" rel="noopener">
+                                    <i class="fas fa-shield-alt me-2"></i>プライバシーポリシー
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom JavaScript for settings page -->
+<script src="{% static 'js/settings.js' %}"></script>
+{% endblock %}

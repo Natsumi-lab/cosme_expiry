@@ -19,6 +19,165 @@
     /* 鮮やかな青・明るめ（余裕あり） */
 }
 
+/* Settings Page Styles */
+.settings-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.settings-card .card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom: none;
+}
+
+.form-switch .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    border-radius: 3rem;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-switch .form-check-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(211, 133, 156, 0.25);
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.password-strength.weak {
+    background-color: var(--danger);
+}
+
+.password-strength.medium {
+    background-color: var(--warning-orange);
+}
+
+.password-strength.strong {
+    background-color: var(--fine);
+}
+
+.password-feedback {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.password-feedback.weak {
+    color: var(--danger);
+}
+
+.password-feedback.medium {
+    color: var(--warning-orange);
+}
+
+.password-feedback.strong {
+    color: var(--fine);
+}
+
+/* Password Match Indicator */
+.password-match {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.password-match.match {
+    color: var(--fine);
+}
+
+.password-match.no-match {
+    color: var(--danger);
+}
+
+/* Settings Form Styling */
+.settings-form-section {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    background-color: #f8f9fa;
+}
+
+.settings-form-section h6 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+/* Custom Button Styles for Settings */
+.btn-settings-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    color: white;
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-settings-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(211, 133, 156, 0.3);
+    color: white;
+}
+
+.btn-settings-warning {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    border: none;
+    color: white;
+    border-radius: 25px;
+    padding: 12px 30px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-settings-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+    color: white;
+}
+
+/* Form Input Focus States */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(211, 133, 156, 0.25);
+}
+
+/* Links Section */
+.settings-links {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+
+.settings-links .btn-outline-secondary {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.settings-links .btn-outline-secondary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
 /* ナビゲーションバー */
 .custom-navbar {
     background: linear-gradient(135deg, var(--dark-color), var(--secondary-color)) !important;
