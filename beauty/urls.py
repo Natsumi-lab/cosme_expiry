@@ -14,6 +14,9 @@ urlpatterns = [
     path('items/<int:id>/', views.item_detail, name='item_detail'),
     path('items/', views.item_list, name='item_list'),
     
+    # Settings
+    path('settings/', views.settings, name='settings'),
+    
     # API
     path('api/taxons/', views.api_taxons, name='api_taxons'), 
 ]

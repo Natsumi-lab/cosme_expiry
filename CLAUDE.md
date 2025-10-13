@@ -120,13 +120,14 @@ Email-based authentication instead of username:
 /items/new/               # Create new item
 /items/<id>/              # Item detail view
 /items/<id>/edit/         # Edit item
+/api/taxons/              # Taxon hierarchy API
 /admin/                   # Django admin interface
 ```
 
 ## View Implementation Patterns
 
 ### Security Pattern
-All item views follow this pattern (`beauty/views.py:247-257`, `beauty/views.py:313-320`):
+All item views follow this pattern (`beauty/views.py:372-379`, `beauty/views.py:435-442`):
 ```python
 try:
     item = Item.objects.get(id=id, user=request.user)
@@ -142,6 +143,16 @@ except Item.DoesNotExist:
 - Cross-field validation in `ItemForm.clean()` (`beauty/forms.py:236-245`)
 - Email uniqueness check in `SignUpForm.clean_email()` (`beauty/forms.py:67-72`)
 - Password strength validation (`beauty/forms.py:74-87`)
+
+### Item List View Implementation
+The item list view (`beauty/views.py:241-365`) includes:
+- Comprehensive filtering by expiry status (expired, week, biweek, month, safe)
+- Search functionality across item names
+- Category filtering with hierarchical support
+- Status filtering (using/finished)
+- Multiple sort options
+- Risk level calculation with color-coded display
+- Tab counting for UI badges
 
 ## LLM Integration Framework
 
@@ -163,12 +174,12 @@ except Item.DoesNotExist:
 - Complete data model structure with migrations applied
 - User authentication system with email-based login
 - Admin interface with hierarchical category restrictions
-- Item CRUD operations (create, detail, edit views)
+- Item CRUD operations (create, list, detail, edit views)
 - Frontend templates with responsive design
 - LLM integration framework structure
+- API endpoint for hierarchical taxon data
 
 **Pending Implementation:**
-- Item list view implementation (URL exists, view needs completion at `beauty/views.py:241-243`)
 - Notification scheduling logic (models exist, scheduling needed)
 - Complete LLM API integration with OpenAI
 - Statistics dashboard backend (Chart.js ready with sample data)

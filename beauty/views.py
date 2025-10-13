@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.views.generic import CreateView, FormView, View
@@ -12,7 +12,7 @@ from django.http import Http404
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from datetime import date, timedelta
-from .forms import SignUpForm, SignInForm, ItemForm
+from .forms import SignUpForm, SignInForm, ItemForm, UserSettingsForm, PasswordChangeForm
 from .models import Taxon, LlmSuggestionLog, Item
 
 
@@ -500,3 +500,75 @@ def api_taxons(request):
     
     data = [{'id': t.id, 'name': t.name} for t in taxons]
     return JsonResponse(data, safe=False)
+
+
+@login_required
+def settings(request):
+    """ユーザー設定ページ"""
+    user = request.user
+    
+    # 現在の通知設定を取得（UserProfileがある場合）
+    # 今回は簡易的にsessionで管理
+    notifications_enabled = request.session.get('notifications_enabled', True)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'update_profile':
+            # プロフィール更新
+            settings_form = UserSettingsForm(request.POST)
+            password_form = PasswordChangeForm(user=user)
+            
+            if settings_form.is_valid():
+                # ユーザーネーム更新
+                new_username = settings_form.cleaned_data.get('username')
+                if new_username and new_username != user.username:
+                    user.username = new_username
+                    user.save()
+                
+                # 通知設定更新
+                notifications_enabled = settings_form.cleaned_data.get('notifications_enabled', False)
+                request.session['notifications_enabled'] = notifications_enabled
+                
+                messages.success(request, 'プロフィール設定を更新しました。')
+                return redirect('beauty:settings')
+            else:
+                messages.error(request, 'プロフィール更新に失敗しました。入力内容を確認してください。')
+        
+        elif action == 'change_password':
+            # パスワード変更
+            settings_form = UserSettingsForm(initial={
+                'username': user.username,
+                'notifications_enabled': notifications_enabled
+            })
+            password_form = PasswordChangeForm(user=user, data=request.POST)
+            
+            if password_form.is_valid():
+                new_password = password_form.cleaned_data['new_password1']
+                user.set_password(new_password)
+                user.save()
+                
+                # セッション維持
+                update_session_auth_hash(request, user)
+                
+                messages.success(request, 'パスワードを変更しました。')
+                return redirect('beauty:settings')
+            else:
+                messages.error(request, 'パスワード変更に失敗しました。入力内容を確認してください。')
+    
+    else:
+        # GET request
+        settings_form = UserSettingsForm(initial={
+            'username': user.username,
+            'notifications_enabled': notifications_enabled
+        })
+        password_form = PasswordChangeForm(user=user)
+    
+    context = {
+        'settings_form': settings_form,
+        'password_form': password_form,
+        'page_title': 'アカウント設定',
+        'page_description': 'アカウント情報と設定を管理します'
+    }
+    
+    return render(request, 'settings.html', context)

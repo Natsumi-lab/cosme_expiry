@@ -8000,6 +8000,7 @@ fieldset:disabled .btn {
 
 .d-grid {
   display: grid !important;
+  place-items: center;
 }
 
 .d-table {

@@ -244,3 +244,103 @@ class ItemForm(forms.ModelForm):
                 raise ValidationError('使用期限は開封日以降の日付を設定してください。')
         
         return cleaned_data
+
+
+class UserSettingsForm(forms.Form):
+    """ユーザー設定フォーム"""
+    
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'ユーザーネーム（表示用）',
+            'id': 'username'
+        }),
+        label='ユーザーネーム',
+        help_text='表示専用です。認証には使用されません。',
+        required=False
+    )
+    
+    notifications_enabled = forms.BooleanField(
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-check-input',
+            'id': 'notifications_enabled',
+            'role': 'switch'
+        }),
+        label='通知を受け取る',
+        required=False
+    )
+    
+
+class PasswordChangeForm(forms.Form):
+    """パスワード変更フォーム"""
+    
+    current_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '現在のパスワード',
+            'id': 'current_password',
+            'autocomplete': 'current-password'
+        }),
+        label='現在のパスワード'
+    )
+    
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '新しいパスワード',
+            'id': 'new_password1',
+            'autocomplete': 'new-password'
+        }),
+        label='新しいパスワード',
+        help_text='8文字以上で、英数字を含む強固なパスワードを設定してください。'
+    )
+    
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '新しいパスワード（確認用）',
+            'id': 'new_password2',
+            'autocomplete': 'new-password'
+        }),
+        label='新しいパスワード（確認用）',
+        help_text='確認のため、同じパスワードを再度入力してください。'
+    )
+    
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+    
+    def clean_current_password(self):
+        """現在のパスワードの確認"""
+        current_password = self.cleaned_data.get('current_password')
+        if current_password and not self.user.check_password(current_password):
+            raise ValidationError('現在のパスワードが正しくありません。')
+        return current_password
+    
+    def clean_new_password1(self):
+        """新しいパスワードの強度チェック"""
+        password = self.cleaned_data.get('new_password1')
+        
+        if len(password) < 8:
+            raise ValidationError('パスワードは8文字以上である必要があります。')
+        
+        if not re.search(r'[A-Za-z]', password):
+            raise ValidationError('パスワードには英字を含める必要があります。')
+        
+        if not re.search(r'\d', password):
+            raise ValidationError('パスワードには数字を含める必要があります。')
+        
+        return password
+    
+    def clean(self):
+        """パスワード確認のマッチング"""
+        cleaned_data = super().clean()
+        new_password1 = cleaned_data.get('new_password1')
+        new_password2 = cleaned_data.get('new_password2')
+        
+        if new_password1 and new_password2:
+            if new_password1 != new_password2:
+                raise ValidationError('新しいパスワードが一致しません。')
+        
+        return cleaned_data
