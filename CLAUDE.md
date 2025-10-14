@@ -34,6 +34,12 @@ python manage.py check
 python manage.py test
 python manage.py shell
 python manage.py collectstatic
+
+# Run specific app tests
+python manage.py test beauty
+
+# Create test data
+python manage.py shell
 ```
 
 ### Virtual Environment
@@ -49,30 +55,50 @@ pip install -r requirements.txt
 pip freeze > requirements.txt
 ```
 
+### Database Management
+
+```bash
+# Reset database (development only)
+python manage.py flush
+
+# Create superuser for admin access
+python manage.py createsuperuser
+
+# Database shell access
+python manage.py dbshell
+```
+
 ## Architecture Overview
 
 ### Core Models (`beauty/models.py`)
 
-1. **Taxon** (lines 14-49): Hierarchical category system
+1. **BaseModel** (lines 5-11): Abstract base with timestamps
+   - Provides `created_at` and `updated_at` fields to all models
+   - Inherited by all main models for consistent auditing
+
+2. **Taxon** (lines 14-49): Hierarchical category system
    - Self-referencing tree structure for cosmetic categories
-   - Auto-calculates `depth` and `full_path` on save
+   - Auto-calculates `depth` and `full_path` on save via custom save method
    - `is_leaf` property determines if category can be assigned to items
    - Used for organizing products (e.g., Makeup > Lips > Lip Gloss)
 
-2. **Item** (lines 52-127): Main product entity
-   - Links to User via ForeignKey with ownership security (`user=request.user` filtering)
+3. **Item** (lines 52-127): Main product entity
+   - User ownership enforced via ForeignKey with CASCADE deletion
    - Uses Taxon for hierarchical categorization via `product_type` field
    - Tracks opening date, expiry date, and status ('using'/'finished')
-   - Risk assessment levels ('low'/'mid'/'high') for alerts
+   - Risk assessment levels ('low'/'mid'/'high') for expiry alerts
+   - Image support via both URL and file upload fields
    - Properties: `main_category`, `middle_category` for navigation breadcrumbs
 
-3. **Notification** (lines 130-153): Automated alert system
+4. **Notification** (lines 130-153): Automated alert system
    - Types: 30-day, 14-day, 7-day warnings, and overdue alerts
+   - Links to User and Item with CASCADE deletion
    - Scheduled notification system with read status tracking
 
-4. **LlmSuggestionLog** (lines 156-201): AI integration tracking
+5. **LlmSuggestionLog** (lines 156-199): AI integration tracking
    - Records LLM suggestions vs user choices for learning
    - Links both suggested and chosen taxons for analysis
+   - Tracks suggestion acceptance rate by target type (category/product_name/brand)
 
 ### Authentication System
 
@@ -104,10 +130,12 @@ Email-based authentication instead of username:
 ### Settings (`cosme_expiry_app/settings.py`)
 
 - **Language**: Japanese (`ja`) with Asia/Tokyo timezone
-- **Database**: SQLite for development
+- **Database**: SQLite for development (UTC storage with timezone-aware display)
 - **Static Files**: Served from `beauty/static/`
 - **Templates**: Located in `beauty/templates/`
+- **Media Files**: User uploads stored in `media/` directory
 - **Virtual Environment**: Uses `venv/` directory
+- **Authentication**: Custom email-based login system
 
 ### URL Configuration (`beauty/urls.py`)
 
@@ -167,6 +195,13 @@ The item list view (`beauty/views.py:241-365`) includes:
 - **Frontend**: Bootstrap 5.2.3, Font Awesome 6.0.0, Chart.js
 - **Database**: SQLite (development)
 - **Image Processing**: Pillow>=11.3.0
+
+### Testing
+
+No testing framework currently configured. Standard Django tests available:
+- Use `python manage.py test` for running tests
+- Use `python manage.py test beauty` for app-specific tests
+- No lint/format tools currently configured (black, flake8 planned in requirements.txt)
 
 ## Implementation Status
 

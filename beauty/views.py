@@ -8,12 +8,12 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from datetime import date, timedelta
 from .forms import SignUpForm, SignInForm, ItemForm, UserSettingsForm, PasswordChangeForm
-from .models import Taxon, LlmSuggestionLog, Item
+from .models import Taxon, LlmSuggestionLog, Item, Notification
 
 
 @login_required
@@ -500,6 +500,71 @@ def api_taxons(request):
     
     data = [{'id': t.id, 'name': t.name} for t in taxons]
     return JsonResponse(data, safe=False)
+
+
+@login_required
+@require_POST
+def mark_notifications_read(request):
+    """通知をグループ単位で既読にするAPI"""
+    notification_type = request.POST.get('type')
+    
+    # 有効な通知タイプかチェック
+    valid_types = ['OVERWEEK', 'D7', 'D14', 'D30']
+    if notification_type not in valid_types:
+        return JsonResponse({'error': 'Invalid notification type'}, status=400)
+    
+    # 該当ユーザーの指定タイプの未読通知を一括既読化
+    updated_count = Notification.objects.filter(
+        user=request.user,
+        type=notification_type,
+        read_at__isnull=True
+    ).update(read_at=timezone.now())
+    
+    # 更新後の未読総数を取得
+    unread_count = Notification.objects.filter(
+        user=request.user,
+        read_at__isnull=True
+    ).count()
+    
+    return JsonResponse({
+        'success': True,
+        'updated_count': updated_count,
+        'unread_total': unread_count
+    })
+
+
+@login_required
+def get_notifications_summary(request):
+    """通知サマリー取得API（ヘッダー表示用）"""
+    user = request.user
+    
+    # タイプ別の未読通知数を取得
+    notification_counts = {}
+    for notification_type, title in [
+        ('OVERWEEK', '使用期限を過ぎたアイテムがあります'),
+        ('D7', '期限7日以内のアイテムがあります'),
+        ('D14', '期限14日以内のアイテムがあります'),
+        ('D30', '期限30日以内のアイテムがあります'),
+    ]:
+        count = Notification.objects.filter(
+            user=user,
+            type=notification_type,
+            read_at__isnull=True
+        ).count()
+        
+        notification_counts[notification_type] = {
+            'count': count,
+            'title': title,
+            'has_unread': count > 0
+        }
+    
+    # 総未読数
+    total_unread = sum(item['count'] for item in notification_counts.values())
+    
+    return JsonResponse({
+        'notifications': notification_counts,
+        'total_unread': total_unread
+    })
 
 
 @login_required
