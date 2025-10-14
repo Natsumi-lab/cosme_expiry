@@ -18,5 +18,7 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     
     # API
-    path('api/taxons/', views.api_taxons, name='api_taxons'), 
+    path('api/taxons/', views.api_taxons, name='api_taxons'),
+    path('api/notifications/summary/', views.get_notifications_summary, name='notifications_summary'),
+    path('api/notifications/mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
 ]

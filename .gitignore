@@ -718,3 +718,90 @@ pre_migration_data/
 # マイグレーション実行ログ
 migration_logs/
 .migration_history
+
+# =============================================================================
+# 通知機能実装関連（2024年10月追加）
+# =============================================================================
+
+# 通知生成ログファイル
+notification_generation_logs/
+generate_notifications.log
+*.notification.log
+
+# 通知テスト用データ
+test_notifications/
+notification_test_data/
+mock_notification_data.json
+
+# 通知API テストレスポンス
+.notification_api_cache/
+notification_api_test/
+
+# バックグラウンド処理ログ
+background_task_logs/
+celery_logs/
+scheduler_logs/
+
+# 通知統計・レポート出力
+notification_reports/
+notification_stats/
+notification_metrics/
+
+# management commandの実行ログ
+management_command_logs/
+command_history/
+
+# cron job関連
+crontab_backup
+.cron_logs/
+
+# 通知機能のJavaScriptデバッグファイル
+beauty/static/js/notifications.debug.js
+beauty/static/js/notifications.dev.js
+
+# AJAX通信ログ
+ajax_debug_logs/
+.api_debug/
+
+# 通知バッジテスト用画像
+test_badge_images/
+notification_icon_variants/
+
+# 通知機能パフォーマンステスト
+notification_performance_logs/
+notification_load_test/
+
+# =============================================================================
+# Django管理画面カスタマイズ関連
+# =============================================================================
+
+# admin画面のカスタムCSS/JS開発ファイル
+admin_customization/
+custom_admin_files/
+
+# 管理画面テンプレートの実験版
+admin_templates_experimental/
+
+# =============================================================================
+# zoneinfo/timezone関連（Python 3.9+）
+# =============================================================================
+
+# タイムゾーン処理のキャッシュ
+.timezone_cache/
+zoneinfo_cache/
+
+# 日時計算テスト結果
+datetime_test_results/
+timezone_test_logs/
+
+# =============================================================================
+# Django management commands関連
+# =============================================================================
+
+# カスタムコマンドのテスト実行ログ
+command_test_logs/
+*.command.log
+
+# コマンド実行の一時ファイル
+command_temp_files/
+.command_cache/
