@@ -13,11 +13,10 @@ class SignUpForm(UserCreationForm):
         max_length=150,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'ユーザーネーム（表示用）',
+            'placeholder': 'ユーザーネーム',
             'id': 'username'
         }),
         label='ユーザーネーム',
-        help_text='表示専用です。認証には使用されません。'
     )
     
     email = forms.EmailField(
@@ -257,7 +256,7 @@ class UserSettingsForm(forms.Form):
             'id': 'username'
         }),
         label='ユーザーネーム',
-        help_text='表示専用です。認証には使用されません。',
+        help_text='変更後のユーザーネームを入力してください。',
         required=False
     )
     
