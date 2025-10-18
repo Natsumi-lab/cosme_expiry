@@ -659,7 +659,7 @@ def suggest_category_api(request):
             user=request.user, item=None,
             target="product_type",
             suggested_taxon_id=c["taxon_id"],
-            accepted=False, chosen_value=None
+            accepted=False
         )
     return JsonResponse({"candidates": candidates})
 
