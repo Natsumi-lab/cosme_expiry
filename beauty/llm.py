@@ -5,48 +5,57 @@ from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-SYSTEM_PROMPT = """あなたはコスメのカテゴリ分類器です。
-与えられたTaxonツリー（id, name, parent_id）と商品テキストから、
-最も適切な「葉ノード（小分類）」候補を上位3件まで返してください。
-出力は必ず次のJSONのみ：
-{
-  "candidates": [
-    {"taxon_id": 123, "path": "メイク用品 > ファンデーション > パウダーファンデ", "confidence": 0.85}
-  ]
-}
-余計な文章は出力しないこと。"""
+SYSTEM_PROMPT = """
+あなたはコスメ商品のカテゴリ分類器です。
+入力:
+- item_text: 商品名やブランド名などの短いテキスト
+- taxons: 候補Taxonのリスト（各要素に id, name, path を含む）。このリストは小カテゴリ（葉）のみ。
+厳守:
+- **必ず taxons の中から**最も適切な小カテゴリを上位3件まで選ぶこと。
+- 適切な候補が無ければ空配列[]を返す（無理に推測しない）。
+- 出力は JSON オブジェクト1つのみ:
+{"candidates":[{"taxon_id":123,"path":"メイク用品 > マスカラ","confidence":0.9}]}
+- 余計な文章は出力しないこと。
 
-def _pack_taxons(taxons_qs) -> List[Dict[str, Any]]:
-    # LLMに渡す最小情報（軽量化のためカラム限定で呼び出してください）
-    return [{"id": t.id, "name": t.name, "parent": t.parent_id} for t in taxons_qs]
+同義語の例:
+- 化粧水 = ローション, トナー, toner, lotion
+- マスカラ = mascara
+- 口紅 = リップスティック, lipstick
+- クレンジングオイル = cleansing oil
 
-def suggest_taxon_candidates(taxons_qs, item_text: str, top_k: int = 3) -> List[Dict[str, Any]]:
-    payload = {"taxons": _pack_taxons(taxons_qs), "item_text": item_text, "top_k": top_k}
+"""
+
+def suggest_taxon_candidates(taxon_payload: List[Dict[str, Any]], item_text: str, top_k: int = 3):
+    payload = {
+        "item_text": item_text,
+        "taxons": taxon_payload,
+        "top_k": top_k
+    }
 
     resp = client.chat.completions.create(
-        model="gpt-3.5-turbo",   
-        temperature=0.1,
+        model="gpt-5-nano",
+        response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}
         ],
-        timeout=15
+        timeout=25
     )
+
+    # JSON取り出し（失敗時は空配列）
     text = resp.choices[0].message.content or "{}"
     try:
         data = json.loads(text)
     except Exception:
-        # 先頭/末尾の余計な文字を落として再挑戦（簡易）
-        left = text.find("{"); right = text.rfind("}")
-        data = json.loads(text[left:right+1]) if left >= 0 and right >= 0 else {"candidates":[]}
+        data = {"candidates": []}
 
     out = []
     for c in data.get("candidates", [])[:top_k]:
         try:
             out.append({
                 "taxon_id": int(c["taxon_id"]),
-                "path": str(c["path"]),
-                "confidence": max(0.0, min(1.0, float(c.get("confidence", 0.5))))
+                "path": str(c.get("path", "")),
+                "confidence": float(c.get("confidence", 0.5))
             })
         except Exception:
             continue
