@@ -74,15 +74,16 @@ function escapeHtml(str) {
 }
 
 async function fetchCandidates() {
-  // 入力値を収集
-  const nameEl  = document.getElementById("id_name");
-  const brandEl = document.getElementById("id_brand");
+  // ▼ name属性ベースで安全に取得
+  const formEl = document.getElementById("item-form");
+  const getVal = (n) => formEl?.querySelector(`[name="${n}"]`)?.value?.trim() || "";
 
   const payload = {
-    name:  nameEl  ? nameEl.value  : "",
-    brand: brandEl ? brandEl.value : "",
+    name:  getVal("name"),   // ← 商品名
+    brand: getVal("brand"),  // ← ブランド名
   };
 
+  // 連打防止＆スピナー
   btnSuggest.disabled = true;
   const oldText = btnSuggest.innerHTML;
   btnSuggest.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>候補取得中...';
