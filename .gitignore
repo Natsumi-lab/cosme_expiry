@@ -805,3 +805,77 @@ command_test_logs/
 # コマンド実行の一時ファイル
 command_temp_files/
 .command_cache/
+
+# =============================================================================
+# LLM機能実装関連（2024年10月最新追加）
+# =============================================================================
+
+# LLM機能の開発・テストファイル
+llm_development/
+llm_test_responses/
+.llm_cache/
+
+# OpenAI APIテストレスポンス
+openai_test_responses/
+.openai_response_cache/
+
+# LLM統合テスト結果
+llm_integration_test/
+ai_suggestion_test_data/
+
+# ChatGPT API関連の実験ファイル
+chatgpt_experiments/
+api_test_scripts/
+
+# LLM提案ログの詳細データ（大容量になる可能性）
+llm_suggestion_detailed_logs/
+ai_interaction_logs/
+
+# 機械学習モデルファイル（将来的な拡張用）
+*.model
+*.pkl
+*.joblib
+models/
+
+# LLM機能のJavaScript開発ファイル
+beauty/static/js/llm.dev.js
+beauty/static/js/ai_suggestions.debug.js
+
+# =============================================================================
+# Windows WSL/コマンドライン関連
+# =============================================================================
+
+# Windows WSL関連
+.wslconfig
+.wsl/
+
+# PowerShell関連
+*.ps1~
+powershell_history/
+
+# Git Bash設定
+.bash_profile.bak
+.bashrc.bak
+
+# =============================================================================
+# プロジェクト固有の一時ファイル
+# =============================================================================
+
+# 開発中のLLM機能テストファイル
+beauty/llm_test.py
+test_llm_integration.py
+llm_debug.py
+
+# フォーム開発の一時ファイル
+form_debug/
+_form_backup.html
+*.form.bak
+
+# URL設定の実験ファイル
+urls_experimental.py
+url_patterns_test.py
+
+# views.py開発時のバックアップ
+views_backup.py
+views.py.bak
+*.views.bak
