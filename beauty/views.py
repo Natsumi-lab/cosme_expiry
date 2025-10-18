@@ -14,6 +14,9 @@ from django.utils import timezone
 from datetime import date, timedelta
 from .forms import SignUpForm, SignInForm, ItemForm, UserSettingsForm, PasswordChangeForm
 from .models import Taxon, LlmSuggestionLog, Item, Notification
+import json
+from .llm import suggest_taxon_candidates
+
 
 
 @login_required
@@ -637,3 +640,26 @@ def settings(request):
     }
     
     return render(request, 'settings.html', context)
+
+@login_required
+@require_POST
+def suggest_category_api(request):
+    data = json.loads(request.body.decode("utf-8")) if request.body else {}
+    name  = (data.get("name")  or "").strip()
+    brand = (data.get("brand") or "").strip()
+
+    # 送るテキストは最小限
+    item_text = " / ".join([s for s in [name, brand] if s])
+
+    taxons = Taxon.objects.all().only("id","name","parent")  
+    candidates = suggest_taxon_candidates(taxons, item_text, top_k=3)
+
+    # ログは最小（採用は後で True に）
+    for c in candidates:
+        LlmSuggestionLog.objects.create(
+            user=request.user, item=None,
+            target="product_type",
+            suggested_taxon_id=c["taxon_id"],
+            accepted=False, chosen_value=None
+        )
+    return JsonResponse({"candidates": candidates})
