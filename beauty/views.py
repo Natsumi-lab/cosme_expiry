@@ -16,6 +16,8 @@ from .forms import SignUpForm, SignInForm, ItemForm, UserSettingsForm, PasswordC
 from .models import Taxon, LlmSuggestionLog, Item, Notification
 import json
 from .llm import suggest_taxon_candidates
+from openai import APITimeoutError
+
 
 
 
@@ -643,32 +645,60 @@ def settings(request):
 @login_required
 @require_POST
 def suggest_category_api(request):
-    data = json.loads(request.body.decode("utf-8")) if request.body else {}
-    name  = (data.get("name")  or "").strip()
-    brand = (data.get("brand") or "").strip()
+    try:
+        data = json.loads(request.body.decode("utf-8")) if request.body else {}
+        name  = (data.get("name")  or "").strip()
+        brand = (data.get("brand") or "").strip()
+        item_text = " / ".join([s for s in [name, brand] if s])
 
-    # 送るテキストは最小限
-    item_text = " / ".join([s for s in [name, brand] if s])
+        # 葉ノードだけを候補集合として LLM に渡す（パンくず付き）
+        leafs = _leaf_taxa()
+        taxon_payload = [{"id": t.id, "name": t.name, "path": _breadcrumb(t)} for t in leafs]
 
-    taxons = Taxon.objects.all().only("id","name","parent")  
-    candidates = suggest_taxon_candidates(taxons, item_text, top_k=3)
+        # 事前フィルタで候補集合を絞る（ヒット時は効果絶大）
+        taxon_payload_pref = prefilter_taxons(taxon_payload, item_text)
 
-    # ログは最小（採用は後で True に）
-    for c in candidates:
-        LlmSuggestionLog.objects.create(
-            user=request.user, item=None,
-            target="product_type",
-            suggested_taxon_id=c["taxon_id"],
-            accepted=False
-        )
-    return JsonResponse({"candidates": candidates})
+        #  デバッグ用出力
+        print("=== DEBUG START ===")
+        print("item_text:", item_text)
+        print("payload size:", len(taxon_payload))
+        print("prefiltered size:", len(taxon_payload_pref))
+        print("example paths:", [p["path"] for p in taxon_payload_pref[:5]])
+        print("=== DEBUG END ===")
+
+        # LLMに「このリストからしか選ぶな」を渡す
+        candidates = suggest_taxon_candidates(taxon_payload_pref, item_text, top_k=3)
+
+        # 返ってきたIDの正当性チェック（保険）
+        valid_ids = {p["id"] for p in taxon_payload_pref}
+        candidates = [c for c in candidates if c.get("taxon_id") in valid_ids]
+
+        # LLMが空だったらフォールバック
+        if not candidates:
+            candidates = naive_fallback(taxon_payload_pref, item_text, top_k=3)
+
+        # 最小ログ（採用は保存時に True を別途記録）
+        for c in candidates:
+            LlmSuggestionLog.objects.create(
+                user=request.user, item=None,
+                target="product_type",
+                suggested_taxon_id=c["taxon_id"],
+                accepted=False
+            )
+        return JsonResponse({"candidates": candidates})
+
+    except APITimeoutError:
+        return JsonResponse({"error": "AI応答がタイムアウトしました。少し待って再試行してください。"}, status=504)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 # --- 葉ノードだけを取得する関数（小カテゴリだけ抽出） ---
 def _leaf_taxa():
     return (
-        Taxon.objects.filter(children__isnull=True)
+        Taxon.objects
+        .filter(children__isnull=True)
         .select_related("parent")
-        .order_by("level", "sort_order", "name")
+        .order_by("name")
     )
 
 # --- パンくず（大 > 中 > 小）表記を作る補助 ---
@@ -702,3 +732,38 @@ def item_create_view(request):
         "taxon_leafs": taxon_leafs,  # ← テンプレで {{ taxon_leafs }} に利用
     }
     return render(request, "items/_form.html", context)
+
+# ---- 事前フィルタ（テキストに応じて候補集合を狭める）----
+def prefilter_taxons(payload, text):
+    txt = (text or "").lower()
+    rules = [
+        (["マスカラ", "mascara"], ["マスカラ"]),
+        (["化粧水", "トナー", "ローション"], ["化粧水"]),
+        (["口紅", "リップスティック"], ["口紅", "リップ"]),
+        (["クレンジング", "クレンズ"], ["クレンジング"]),
+        (["ファンデ", "ファンデーション"], ["ファンデ"]),
+    ]
+    for keys, labels in rules:
+        if any(k in txt for k in keys):
+            return [p for p in payload if any(lbl in p["name"] or lbl in p["path"] for lbl in labels)]
+    return payload  # ヒットなしなら全体
+
+# ---- LLMが空を返した時の簡易フォールバック ----
+def naive_fallback(payload, text, top_k=3):
+    txt = (text or "").lower()
+    def score(p):
+        s = 0
+        if any(k in txt for k in ["マスカラ","mascara"]):
+            if "マスカラ" in p["name"] or "マスカラ" in p["path"]: s += 3
+        if any(k in txt for k in ["化粧水","トナー","ローション"]):
+            if "化粧水" in p["name"] or "化粧水" in p["path"]: s += 3
+        # 追加の弱いヒット
+        tokens = ["ファンデ","リップ","アイライナー","アイシャドウ","チーク","乳液","美容液","ジェル","バーム","オイル","石鹸","フォーム","クレンジング"]
+        for tk in tokens:
+            if tk in txt and (tk in p["name"] or tk in p["path"]):
+                s += 1
+        return s
+    ranked = sorted(((score(p), p) for p in payload), key=lambda x: x[0], reverse=True)
+    out = [{"taxon_id": p["id"], "path": p["path"], "confidence": min(0.9, sc/5.0)}
+           for sc, p in ranked[:top_k] if sc > 0]
+    return out
