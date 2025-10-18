@@ -98,6 +98,16 @@
                             {% endif %}
                         </div>
 
+                        <div id="ai-suggest" class="mt-2" data-api-url="{% url 'beauty:suggest_category_api' %}">
+                            <button type="button" id="btn-suggest" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-magic me-1"></i> AIでカテゴリ候補を取得
+                            </button>
+                            <small class="text-muted d-block mt-1">
+                                商品名／ブランドをもとに最も細かいカテゴリ候補を提案します
+                            </small>
+                            <ul id="suggest-list" class="list-unstyled mt-2"></ul>
+                        </div>
+
                         <!-- Date Information Row -->
                         <div class="row">
                             <div class="col-md-6 mb-4">
