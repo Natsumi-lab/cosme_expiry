@@ -161,7 +161,6 @@ class SignOutView(View):
         # ログインページにリダイレクト
         return redirect('beauty:signin')
 
-# views.py または services.py
 
 def process_llm_suggestion(user, image_data, product_name_hint=None):
     """
@@ -663,3 +662,43 @@ def suggest_category_api(request):
             accepted=False, chosen_value=None
         )
     return JsonResponse({"candidates": candidates})
+
+# --- 葉ノードだけを取得する関数（小カテゴリだけ抽出） ---
+def _leaf_taxa():
+    return (
+        Taxon.objects.filter(children__isnull=True)
+        .select_related("parent")
+        .order_by("level", "sort_order", "name")
+    )
+
+# --- パンくず（大 > 中 > 小）表記を作る補助 ---
+def _breadcrumb(taxon):
+    names = []
+    cur = taxon
+    while cur:
+        names.append(cur.name)
+        cur = cur.parent
+    return " > ".join(reversed(names))
+
+# --- アイテム登録ページ（GET表示） ---
+@login_required
+def item_create_view(request):
+    if request.method == "POST":
+        form = ItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.user = request.user
+            item.save()
+            return redirect("_form")  # 登録後のリダイレクト先
+    else:
+        form = ItemForm()
+
+    # 葉ノードだけ抽出してパンくず形式に加工
+    leafs = _leaf_taxa()
+    taxon_leafs = [{"id": t.id, "breadcrumb": _breadcrumb(t)} for t in leafs]
+
+    context = {
+        "form": form,
+        "taxon_leafs": taxon_leafs,  # ← テンプレで {{ taxon_leafs }} に利用
+    }
+    return render(request, "items/_form.html", context)
