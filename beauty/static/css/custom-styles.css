@@ -19,6 +19,18 @@
     /* 鮮やかな青・明るめ（余裕あり） */
 }
 
+/* ページ全体のオーバーフロー制御 */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    position: relative;
+}
+
 /* Settings Page Styles */
 .settings-card {
     border: none;
@@ -722,8 +734,17 @@
 }
 
 /* フッター */
-footer {
+.footer-bg-wrapper {
     background: linear-gradient(135deg, var(--dark-color), #2c2c2c) !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.footer-bg {
+    background: transparent !important;
+    margin: 0;
+    padding: 0;
 }
 
 /* フッターコンテナ - ヘッダーと同じ幅に統一 */
