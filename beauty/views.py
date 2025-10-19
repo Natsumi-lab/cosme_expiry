@@ -252,6 +252,25 @@ def item_list(request):
     product_type = request.GET.get('product_type', '')    # カテゴリID（Taxon）
     status       = request.GET.get('status', '')          # using / finished など
     sort         = request.GET.get('sort', 'expires_on')  # ソートキー
+    # （優先: tab / 互換: status）
+    raw_tab   = request.GET.get('tab', '').strip()
+    raw_stat  = request.GET.get('status', '').strip()
+
+    # 互換: ?status=expired/week/biweek/month/safe → tab に正規化
+    status_to_tab = {
+        'expired': 'expired',
+        'week':    'week',
+        'biweek':  'biweek',
+        'month':   'month',
+        'safe':    'safe',
+    }
+    tab = raw_tab or status_to_tab.get(raw_stat, 'all')
+
+    search       = request.GET.get('search', '').strip()
+    product_type = request.GET.get('product_type', '').strip()
+    # 「使用中/使い切り」などの状態は state に退避（必要なければこの行は削除）
+    state        = request.GET.get('state', '').strip()
+    sort         = request.GET.get('sort', 'expires_on').strip()
 
     # ---- 日付境界（相互排他）----
     today = date.today()
