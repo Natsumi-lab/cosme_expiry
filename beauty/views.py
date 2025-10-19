@@ -306,17 +306,19 @@ def item_list(request):
     else:
         tab = 'all'  # 不正値は all 扱い
 
-    # ---- ソート ----
-    if sort == 'expires_on':
-        qs = qs.order_by('expires_on')
-    elif sort == '-expires_on':
-        qs = qs.order_by('-expires_on')
-    elif sort == 'created_at':
-        qs = qs.order_by('created_at')
-    elif sort == '-created_at':
-        qs = qs.order_by('-created_at')
-    else:
-        qs = qs.order_by('expires_on')
+    # ---- ソート　----
+    ORDERING_MAP = {
+        'expires_on': 'expires_on',
+        '-expires_on': '-expires_on', 
+        'created_at': 'created_at',
+        '-created_at': '-created_at'
+    }
+    
+    # 不正値が来てもデフォルト（expires_on）にフォールバック
+    ordering = ORDERING_MAP.get(sort, 'expires_on')
+
+    # フィルタ済みクエリにソートを適用
+    qs = qs.order_by(ordering)
 
     # ---- カード表示用：残日数＆リスク文言（あなたのバッジと同じ判定）----
     items_with_data = []
