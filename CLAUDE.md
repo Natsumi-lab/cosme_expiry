@@ -68,6 +68,18 @@ python manage.py createsuperuser
 python manage.py dbshell
 ```
 
+### Environment Variables Setup
+
+The project uses dotenv for environment variables:
+
+```bash
+# Create .env file in project root (if not exists)
+touch .env
+
+# Add OpenAI API key
+echo "OPENAI_API_KEY=your-api-key-here" >> .env
+```
+
 ## Architecture Overview
 
 ### Core Models (`beauty/models.py`)
@@ -120,6 +132,12 @@ Email-based authentication instead of username:
 - Navigation with offcanvas mobile menu
 - Statistics dashboard with sample data (`beauty/static/js/scripts.js`)
 
+**Item List Implementation**:
+- Multi-tab interface for expiry status filtering (expired, 7 days, 14 days, etc.)
+- Advanced hierarchical category filtering with dynamic selects
+- Custom JavaScript handling in `item-list.js` for AJAX loading of category options
+- Responsive card layout for displaying items with risk indicators
+
 **Design System**:
 - Primary: `#f8dec6` (Light Cream)
 - Accent: `#d3859c` (Dusty Rose)
@@ -136,6 +154,7 @@ Email-based authentication instead of username:
 - **Media Files**: User uploads stored in `media/` directory
 - **Virtual Environment**: Uses `venv/` directory
 - **Authentication**: Custom email-based login system
+- **Environment Variables**: Uses python-dotenv for configuration (OPENAI_API_KEY)
 
 ### URL Configuration (`beauty/urls.py`)
 
@@ -182,11 +201,20 @@ The item list view (`beauty/views.py:241-365`) includes:
 - Risk level calculation with color-coded display
 - Tab counting for UI badges
 
+### JavaScript Integration
+The application uses modern JavaScript for dynamic features:
+- `item-list.js`: Handles hierarchical filtering and AJAX category loading
+- `item-form.js`: Manages dynamic form behavior and validation
+- `scripts.js`: Core site functionality and Chart.js dashboard
+
 ## LLM Integration Framework
 
 **Framework Functions** (`beauty/views.py:163-201`):
 - `process_llm_suggestion()`: Framework for LLM API calls with Taxon suggestions
 - `confirm_llm_suggestion()`: User confirmation handling and learning log
+
+**Management Commands**:
+- `generate_notifications.py`: Custom command for scheduled notification generation
 
 ## Development Environment
 
@@ -195,6 +223,7 @@ The item list view (`beauty/views.py:241-365`) includes:
 - **Frontend**: Bootstrap 5.2.3, Font Awesome 6.0.0, Chart.js
 - **Database**: SQLite (development)
 - **Image Processing**: Pillow>=11.3.0
+- **Environment Variables**: python-dotenv for API keys and configuration
 
 ### Testing
 
@@ -213,6 +242,7 @@ No testing framework currently configured. Standard Django tests available:
 - Frontend templates with responsive design
 - LLM integration framework structure
 - API endpoint for hierarchical taxon data
+- Item listing with filtering and sorting
 
 **Pending Implementation:**
 - Notification scheduling logic (models exist, scheduling needed)
@@ -226,3 +256,4 @@ No testing framework currently configured. Standard Django tests available:
 - **Security**: User ownership validation on all item operations
 - **Internationalization**: Japanese language with Asia/Tokyo timezone
 - **Responsive Design**: Bootstrap mobile-first approach
+- **Error Handling**: Comprehensive exception handling in views

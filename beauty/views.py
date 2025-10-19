@@ -810,3 +810,21 @@ def naive_fallback(payload, text, top_k=3):
     out = [{"taxon_id": p["id"], "path": p["path"], "confidence": min(0.9, sc/5.0)}
            for sc, p in ranked[:top_k] if sc > 0]
     return out
+
+@login_required
+def expiry_stats(request):
+    today = date.today()
+    d7  = today + timedelta(days=7)
+    d14 = today + timedelta(days=14)
+    d30 = today + timedelta(days=30)
+
+    qs = Item.objects.filter(user=request.user)
+
+    data = {
+        "expired": qs.filter(expires_on__lt=today).count(),
+        "week":    qs.filter(expires_on__gte=today,                     expires_on__lte=d7).count(),
+        "biweek":  qs.filter(expires_on__gte=d7 + timedelta(days=1),    expires_on__lte=d14).count(),
+        "month":   qs.filter(expires_on__gte=d14 + timedelta(days=1),   expires_on__lte=d30).count(),
+        "safe":    qs.filter(expires_on__gt=d30).count(),
+    }
+    return JsonResponse(data)

@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/notifications/summary/', views.get_notifications_summary, name='notifications_summary'),
     path('api/notifications/mark-read/', views.mark_notifications_read, name='mark_notifications_read'),
     path("api/suggest_category/", views.suggest_category_api, name="suggest_category_api"),
+    path("api/expiry-stats/", views.expiry_stats, name="api-expiry-stats"),
 ]
