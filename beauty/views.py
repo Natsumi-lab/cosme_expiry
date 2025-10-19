@@ -244,107 +244,148 @@ def item_new(request):
 
 @login_required
 def item_list(request):
-    """アイテム一覧ビュー"""
-    from datetime import date
-    from django.db.models import Q
-    from django.http import JsonResponse
-    
-    # ベースクエリ
-    items = Item.objects.filter(user=request.user).select_related('product_type')
-    
-    # フィルタパラメータ取得
-    tab = request.GET.get('tab', 'all')  # 期限タブ
-    search = request.GET.get('search', '').strip()  # 検索
-    product_type = request.GET.get('product_type', '')  # カテゴリ
-    status = request.GET.get('status', '')  # ステータス
-    sort = request.GET.get('sort', 'expires_on')  # ソート
-    
-    # 検索フィルタ
+    """アイテム一覧ビュー（期限タブは再読み込み型）"""
+
+    # ---- パラメータ取得 ----
+    tab          = request.GET.get('tab', 'all')          # 期限タブ: all/expired/week/biweek/month/safe
+    search       = request.GET.get('search', '').strip()  # 検索
+    product_type = request.GET.get('product_type', '')    # カテゴリID（Taxon）
+    status       = request.GET.get('status', '')          # using / finished など
+    sort         = request.GET.get('sort', 'expires_on')  # ソートキー
+
+    # ---- 日付境界（相互排他）----
+    today = date.today()
+    d7  = today + timedelta(days=7)
+    d14 = today + timedelta(days=14)
+    d30 = today + timedelta(days=30)
+
+    # ---- ベースクエリ（このユーザーのものだけ）----
+    base_qs = Item.objects.filter(user=request.user).select_related('product_type')
+
+    # ---- 検索 ----
     if search:
-        items = items.filter(name__icontains=search)
-    
-    # カテゴリフィルタ（指定されたカテゴリとその子孫を含む）
+        base_qs = base_qs.filter(name__icontains=search)
+
+    # ---- カテゴリ（自身＋子孫を含める）----
     if product_type:
         try:
-            taxon = Taxon.objects.get(id=product_type)
-            # 自身と子孫のTaxonIDを取得
-            descendant_ids = [product_type]
-            def get_descendants(parent_id):
-                children = Taxon.objects.filter(parent_id=parent_id).values_list('id', flat=True)
-                for child_id in children:
-                    descendant_ids.append(child_id)
-                    get_descendants(child_id)
-            get_descendants(product_type)
-            items = items.filter(product_type_id__in=descendant_ids)
-        except Taxon.DoesNotExist:
+            target_id = int(product_type)
+            descendant_ids = [target_id]
+            # 簡易BFSで子孫を収集（再帰より安全）
+            queue = [target_id]
+            while queue:
+                pid = queue.pop(0)
+                children = list(Taxon.objects.filter(parent_id=pid).values_list('id', flat=True))
+                descendant_ids.extend(children)
+                queue.extend(children)
+            base_qs = base_qs.filter(product_type_id__in=descendant_ids)
+        except (ValueError, Taxon.DoesNotExist):
             pass
-    
-    # ステータスフィルタ
+
+    # ---- ステータス ----
     if status in ['using', 'finished']:
-        items = items.filter(status=status)
-    
-    # 期限タブフィルタ
-    today = date.today()
+        base_qs = base_qs.filter(status=status)
+
+    # ---- タブごとのフィルタ（カードのバッジと完全一致：相互排他）----
+    qs = base_qs
     if tab == 'expired':
-        items = items.filter(expires_on__lt=today)
+        # 期限切れ：今日より前
+        qs = base_qs.filter(expires_on__lt=today)
     elif tab == 'week':
-        from datetime import timedelta
-        items = items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=7))
+        # 7日以内：今日〜7日後（含む）
+        qs = base_qs.filter(expires_on__gte=today, expires_on__lte=d7)
     elif tab == 'biweek':
-        from datetime import timedelta
-        items = items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=14))
+        # 14日以内：8〜14日後（8日後 = d7+1）
+        qs = base_qs.filter(expires_on__gte=d7 + timedelta(days=1), expires_on__lte=d14)
     elif tab == 'month':
-        from datetime import timedelta
-        items = items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=30))
+        # 30日以内：15〜30日後
+        qs = base_qs.filter(expires_on__gte=d14 + timedelta(days=1), expires_on__lte=d30)
     elif tab == 'safe':
-        from datetime import timedelta
-        items = items.filter(expires_on__gt=today + timedelta(days=30))
-    
-    # ソート
-    if sort == 'expires_on':
-        items = items.order_by('expires_on')
-    elif sort == '-expires_on':
-        items = items.order_by('-expires_on')
-    elif sort == '-created_at':
-        items = items.order_by('-created_at')
-    elif sort == 'created_at':
-        items = items.order_by('created_at')
+        # 余裕あり：30日超
+        qs = base_qs.filter(expires_on__gt=d30)
     else:
-        items = items.order_by('expires_on')
-    
-    # 各アイテムの残日数とリスク計算
-    today = date.today()
+        tab = 'all'  # 不正値は all 扱い
+
+    # ---- ソート ----
+    if sort == 'expires_on':
+        qs = qs.order_by('expires_on')
+    elif sort == '-expires_on':
+        qs = qs.order_by('-expires_on')
+    elif sort == 'created_at':
+        qs = qs.order_by('created_at')
+    elif sort == '-created_at':
+        qs = qs.order_by('-created_at')
+    else:
+        qs = qs.order_by('expires_on')
+
+    # ---- カード表示用：残日数＆リスク文言（あなたのバッジと同じ判定）----
     items_with_data = []
-    for item in items:
+    for item in qs:
         days_remaining = (item.expires_on - today).days
-        
         if days_remaining < 0:
             risk_level = 'expired'
-            risk_text = '期限切れ'
+            risk_text  = '期限切れ'
         elif days_remaining <= 7:
             risk_level = 'critical'
-            risk_text = '期限7日以内'
+            risk_text  = '期限7日以内'
         elif days_remaining <= 14:
             risk_level = 'warning'
-            risk_text = '期限14日以内'
+            risk_text  = '期限14日以内'
         elif days_remaining <= 30:
             risk_level = 'caution'
-            risk_text = '期限30日以内'
+            risk_text  = '期限30日以内'
         else:
             risk_level = 'safe'
-            risk_text = '余裕あり'
-        
+            risk_text  = '余裕あり'
+
         items_with_data.append({
             'item': item,
             'days_remaining': days_remaining,
             'days_remaining_abs': abs(days_remaining),
             'risk_level': risk_level,
-            'risk_text': risk_text
+            'risk_text': risk_text,
         })
+
+    # ---- バッジ件数（相互排他の同じ境界で計算）----
+    counts = {
+        'all':     base_qs.count(),
+        'expired': base_qs.filter(expires_on__lt=today).count(),
+        'week':    base_qs.filter(expires_on__gte=today,                 expires_on__lte=d7).count(),
+        'biweek':  base_qs.filter(expires_on__gte=d7 + timedelta(days=1), expires_on__lte=d14).count(),
+        'month':   base_qs.filter(expires_on__gte=d14 + timedelta(days=1),expires_on__lte=d30).count(),
+        'safe':    base_qs.filter(expires_on__gt=d30).count(),
+    }
+
+    # ---- レンダリング ----
+    return render(request, 'items/item_list.html', {
+        'items_with_data': items_with_data,   # テンプレート側は item.item / item.risk_text で参照
+        'current_tab': tab,
+        'current_sort': sort,
+        'tab_counts': counts,
+        'search': search,
+        'product_type': product_type,
+        'status': status,
+    })  
+    
+    # カテゴリフィルタ（指定されたカテゴリとその子孫を含む）
+    # if product_type:
+    #     try:
+    #         taxon = Taxon.objects.get(id=product_type)
+    #         # 自身と子孫のTaxonIDを取得
+    #         descendant_ids = [product_type]
+    #         def get_descendants(parent_id):
+    #             children = Taxon.objects.filter(parent_id=parent_id).values_list('id', flat=True)
+    #             for child_id in children:
+    #                 descendant_ids.append(child_id)
+    #                 get_descendants(child_id)
+    #         get_descendants(product_type)
+    #         items = items.filter(product_type_id__in=descendant_ids)
+    #     except Taxon.DoesNotExist:
+    #         pass
+    
     
     # 各タブのアイテム数を計算
     all_items = Item.objects.filter(user=request.user)
-    from datetime import timedelta
     
     tab_counts = {
         'all': all_items.count(),
