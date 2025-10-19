@@ -169,6 +169,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function applyFilters() {
+        console.log('フィルタ適用関数実行開始');
+        
         // 選択されたカテゴリIDを決定（小 > 中 > 大の優先順位）
         let productTypeId = '';
         if (selectedCategories.minor) {
@@ -181,8 +183,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 隠しフィールドに設定
         productTypeInput.value = productTypeId;
+        console.log('カテゴリID設定完了:', productTypeId);
+        
+        // 現在のタブ値を確認
+        const tabInput = document.querySelector('input[name="tab"]');
+        console.log('現在のタブ値:', tabInput ? tabInput.value : 'なし');
         
         // フォームを送信
+        console.log('フォーム送信実行');
         searchForm.submit();
     }
 
@@ -209,6 +217,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function switchTab(tab) {
+        console.log('タブ切り替え開始:', tab);
+        
         // タブの外観を更新
         tabButtons.forEach(button => {
             button.classList.remove('active');
@@ -217,15 +227,22 @@ document.addEventListener('DOMContentLoaded', function() {
         const activeButton = document.querySelector(`[data-tab="${tab}"]`);
         if (activeButton) {
             activeButton.classList.add('active');
+            console.log('アクティブタブ設定完了:', tab);
+        } else {
+            console.error('タブボタンが見つかりません:', tab);
         }
         
         // 隠しフィールドを更新
         const tabInput = document.querySelector('input[name="tab"]');
         if (tabInput) {
             tabInput.value = tab;
+            console.log('隠しフィールド更新完了:', tab);
+        } else {
+            console.error('タブ用隠しフィールドが見つかりません');
         }
         
         // フィルタを適用
+        console.log('フィルタ適用開始');
         applyFilters();
     }
 

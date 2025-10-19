@@ -11,9 +11,9 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h2 class="h3 mb-1 text-dark">
-                        <i class="fas fa-list me-2"></i>{{ page_title }}
+                        <i class="fas fa-list me-2"></i>{{ page_title }}アイテム一覧
                     </h2>
-                    <p class="text-muted mb-0">{{ page_description }}</p>
+                    <p class="text-muted mb-0">{{ page_description }}登録したコスメアイテム一覧を表示します</p>
                 </div>
                 <div>
                     <a href="{% url 'beauty:item_new' %}" class="btn btn-primary">
@@ -30,47 +30,35 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
                     <ul class="nav nav-tabs nav-tabs-custom border-0" id="expiryTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if current_tab == 'all' %}active{% endif %}" 
-                                    data-tab="all" type="button">
-                                すべて
-                                <span class="badge bg-secondary ms-1">{{ tab_counts.all }}</span>
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_tab == 'all' %}active{% endif %}" href="?tab=all">
+                                すべて <span class="badge bg-secondary ms-1">{{ tab_counts.all }}</span>
+                            </a>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if current_tab == 'expired' %}active{% endif %}" 
-                                    data-tab="expired" type="button">
-                                期限切れ
-                                <span class="badge bg-danger ms-1">{{ tab_counts.expired }}</span>
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_tab == 'expired' %}active{% endif %}" href="?tab=expired">
+                                期限切れ <span class="badge bg-danger ms-1">{{ tab_counts.expired }}</span>
+                            </a>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if current_tab == 'week' %}active{% endif %}" 
-                                    data-tab="week" type="button">
-                                7日以内
-                                <span class="badge bg-warning ms-1">{{ tab_counts.week }}</span>
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_tab == 'week' %}active{% endif %}" href="?tab=week">
+                                7日以内 <span class="badge bg-warning ms-1">{{ tab_counts.week }}</span>
+                            </a>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if current_tab == 'biweek' %}active{% endif %}" 
-                                    data-tab="biweek" type="button">
-                                14日以内
-                                <span class="badge bg-warning ms-1">{{ tab_counts.biweek }}</span>
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_tab == 'biweek' %}active{% endif %}" href="?tab=biweek">
+                                14日以内 <span class="badge bg-warning ms-1">{{ tab_counts.biweek }}</span>
+                            </a>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if current_tab == 'month' %}active{% endif %}" 
-                                    data-tab="month" type="button">
-                                30日以内
-                                <span class="badge bg-info ms-1">{{ tab_counts.month }}</span>
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_tab == 'month' %}active{% endif %}" href="?tab=month">
+                                30日以内 <span class="badge bg-info ms-1">{{ tab_counts.month }}</span>
+                            </a>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if current_tab == 'safe' %}active{% endif %}" 
-                                    data-tab="safe" type="button">
-                                余裕あり
-                                <span class="badge bg-success ms-1">{{ tab_counts.safe }}</span>
-                            </button>
+                        <li class="nav-item">
+                            <a class="nav-link {% if current_tab == 'safe' %}active{% endif %}" href="?tab=safe">
+                                余裕あり <span class="badge bg-success ms-1">{{ tab_counts.safe }}</span>
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -88,8 +76,8 @@
                         <div class="row mb-3">
                             <div class="col-md-8">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" name="search" 
-                                           placeholder="商品名で検索..." value="{{ current_search }}">
+                                    <input type="text" class="form-control" name="search" placeholder="商品名で検索..."
+                                        value="{{ current_search }}">
                                     <button class="btn btn-outline-primary" type="submit">
                                         <i class="fas fa-search"></i>
                                     </button>
@@ -97,10 +85,14 @@
                             </div>
                             <div class="col-md-4">
                                 <select class="form-select" name="sort" id="sortSelect">
-                                    <option value="expires_on" {% if current_sort == 'expires_on' %}selected{% endif %}>期限が近い順</option>
-                                    <option value="-expires_on" {% if current_sort == '-expires_on' %}selected{% endif %}>期限が遠い順</option>
-                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>登録日が新しい順</option>
-                                    <option value="created_at" {% if current_sort == 'created_at' %}selected{% endif %}>登録日が古い順</option>
+                                    <option value="expires_on" {% if current_sort == 'expires_on' %}selected{% endif %}>
+                                        期限が近い順</option>
+                                    <option value="-expires_on" {% if current_sort == '-expires_on' %}selected{% endif %}>
+                                        期限が遠い順</option>
+                                    <option value="-created_at" {% if current_sort == '-created_at' %}selected{% endif %}>
+                                        登録日が新しい順</option>
+                                    <option value="created_at" {% if current_sor == 'created_at' %}selected{% endif %}>
+                                        登録日が古い順</option>
                                 </select>
                             </div>
                         </div>
@@ -129,8 +121,10 @@
                                 <label class="form-label">ステータス</label>
                                 <select class="form-select" name="status" id="statusSelect">
                                     <option value="">すべて</option>
-                                    <option value="using" {% if current_status == 'using' %}selected{% endif %}>使用中</option>
-                                    <option value="finished" {% if current_status == 'finished' %}selected{% endif %}>使用終了</option>
+                                    <option value="using" {% if current_status == 'using' %}selected{% endif %}>使用中
+                                    </option>
+                                    <option value="finished" {% if current_status == 'finished' %}selected{% endif %}>使用終了
+                                    </option>
                                 </select>
                             </div>
                         </div>
@@ -158,79 +152,82 @@
     <!-- アイテム一覧 -->
     <div class="row">
         {% if items_with_data %}
-            {% for item_data in items_with_data %}
-            <div class="col-lg-6 col-xl-4 mb-4">
-                <div class="card item-card h-100 shadow-sm" 
-                     onclick="location.href='{% url 'beauty:item_detail' item_data.item.id %}'"
-                     style="cursor: pointer;">
-                    <div class="row g-0 h-100">
-                        <div class="col-4">
-                            {% if item_data.item.image %}
-                                <img src="{{ item_data.item.image.url }}" class="img-fluid item-image" alt="{{ item_data.item.name }}">
-                            {% else %}
-                                <div class="item-image-placeholder d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-image text-muted fa-2x"></i>
-                                </div>
-                            {% endif %}
+        {% for item_data in items_with_data %}
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="card item-card h-100 shadow-sm"
+                onclick="location.href='{% url 'beauty:item_detail' item_data.item.id %}'" style="cursor: pointer;">
+                <div class="row g-0 h-100">
+                    <div class="col-4">
+                        {% if item_data.item.image %}
+                        <img src="{{ item_data.item.image.url }}" class="img-fluid item-image"
+                            alt="{{ item_data.item.name }}">
+                        {% else %}
+                        <div class="item-image-placeholder d-flex align-items-center justify-content-center">
+                            <i class="fas fa-image text-muted fa-2x"></i>
                         </div>
-                        <div class="col-8">
-                            <div class="card-body p-3 d-flex flex-column h-100">
-                                <div class="mb-2">
-                                    <span class="badge badge-category">{{ item_data.item.product_type.name }}</span>
-                                    <span class="badge badge-status-{{ item_data.item.status }} ms-1">
-                                        {% if item_data.item.status == 'using' %}使用中{% else %}使用終了{% endif %}
-                                    </span>
-                                </div>
-                                
-                                <h6 class="card-title mb-2 text-truncate" title="{{ item_data.item.name }}">
-                                    {{ item_data.item.name }}
-                                </h6>
-                                
-                                {% if item_data.item.brand %}
-                                <p class="text-muted small mb-2">{{ item_data.item.brand }}</p>
-                                {% endif %}
-                                
-                                <div class="mt-auto">
-                                    <div class="d-flex justify-content-between align-items-end">
-                                        <div>
-                                            <div class="expiry-status expiry-{{ item_data.risk_level }}">
-                                                {{ item_data.risk_text }}
-                                            </div>
-                                            <small class="text-muted">
-                                                {% if item_data.days_remaining >= 0 %}
-                                                    あと{{ item_data.days_remaining }}日
-                                                {% else %}
-                                                    {{ item_data.days_remaining_abs }}日経過
-                                                {% endif %}
-                                            </small>
+                        {% endif %}
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body p-3 d-flex flex-column h-100">
+                            <div class="mb-2">
+                                <span class="badge badge-category">{{ item_data.item.product_type.name }}</span>
+                                <span class="badge badge-status-{{ item_data.item.status }} ms-1">
+                                    {% if item_data.item.status == 'using' %}使用中{% else %}使用終了{% endif %}
+                                </span>
+                            </div>
+
+                            <h6 class="card-title mb-2 text-truncate" title="{{ item_data.item.name }}">
+                                {{ item_data.item.name }}
+                            </h6>
+
+                            {% if item_data.item.brand %}
+                            <p class="text-muted small mb-2">{{ item_data.item.brand }}</p>
+                            {% endif %}
+
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-end">
+                                    <div>
+                                        <div class="expiry-status expiry-{{ item_data.risk_level }}">
+                                            {{ item_data.risk_text }}
                                         </div>
-                                        <div class="text-end">
-                                            <small class="text-muted d-block">{{ item_data.item.expires_on|date:"Y/m/d" }}</small>
-                                        </div>
+                                        <small class="text-muted">
+                                            {% if item_data.days_remaining >= 0 %}
+                                            あと{{ item_data.days_remaining }}日
+                                            {% else %}
+                                            {{ item_data.days_remaining_abs }}日経過
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted d-block">
+                                            {{ item_data.item.expires_on|date:"Y/m/d" }}
+                                        </small>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
-            {% endfor %}
+        </div>
+        {% endfor %}
         {% else %}
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted mb-2">アイテムが見つかりません</h5>
-                    <p class="text-muted mb-4">条件を変更して再度検索してください</p>
-                    <a href="{% url 'beauty:item_new' %}" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i>最初のアイテムを追加
-                    </a>
-                </div>
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted mb-2">アイテムが見つかりません</h5>
+                <p class="text-muted mb-4">条件を変更して再度検索してください</p>
+                <a href="{% url 'beauty:item_new' %}" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>最初のアイテムを追加
+                </a>
             </div>
+        </div>
         {% endif %}
     </div>
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'js/item-list.js' %}"></script>
-{% endblock %}
+    {% block extra_js %}
+    <script src="{% static 'js/item-list.js' %}"></script>
+    {% endblock %}
