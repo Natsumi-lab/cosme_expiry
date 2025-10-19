@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link href="{% static 'css/expiry-chart.css' %}" rel="stylesheet" />
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
 <div class="hero-section">
@@ -125,4 +129,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/expiry-chart.js' %}"></script>
 {% endblock %}

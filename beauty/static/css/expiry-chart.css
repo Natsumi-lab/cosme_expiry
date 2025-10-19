@@ -1,0 +1,94 @@
+/*
+ * 期限別アイテム数グラフのスタイル
+ * レスポンシブ対応とグラフのカスタマイズを実装
+ */
+
+.chart-container {
+    position: relative;
+    height: 250px; /* デフォルトの高さ */
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 767px) {
+    .chart-container {
+        height: 220px; /* モバイル向けに高さを調整 */
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .chart-container {
+        height: 240px; /* タブレット向けに高さを調整 */
+    }
+}
+
+@media (min-width: 992px) {
+    .chart-container {
+        height: 280px; /* デスクトップ向けに高さを調整 */
+    }
+}
+
+/* チャートカードのスタイル */
+.chart-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.chart-card .card-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.chart-card .card-body {
+    padding: 20px;
+}
+
+/* エラー表示のスタイル */
+.chart-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #842029;
+    background-color: #f8d7da;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+.chart-error i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* データラベルのスタイル */
+.chart-datalabels {
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* アニメーション */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.5s ease forwards;
+}

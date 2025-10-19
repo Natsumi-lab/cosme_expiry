@@ -88,12 +88,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="small text-muted">
-                                並び順デバッグ：
-                                {% for row in items_with_data|slice:":3" %}
-                                [{{ row.item.expires_on|date:"Y-m-d" }}]
-                                {% endfor %}
-                            </div>
+
                             <div class="col-md-4">
                                 <select class="form-select" name="sort" id="sortSelect" onchange="this.form.submit()">
                                     <option value="expires_on" {% if current_sort == 'expires_on' %}selected{% endif %}>
