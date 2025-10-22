@@ -17,7 +17,7 @@ from .models import Taxon, LlmSuggestionLog, Item, Notification
 import json
 from .llm import suggest_taxon_candidates
 from openai import APITimeoutError
-
+from django.db.models import Count
 
 
 
@@ -339,7 +339,7 @@ def item_list(request):
     # フィルタ済みクエリにソートを適用
     qs = qs.order_by(ordering)
 
-    # ---- カード表示用：残日数＆リスク文言（あなたのバッジと同じ判定）----
+    # ---- カード表示用：残日数＆リスク文言 ----
     items_with_data = []
     for item in qs:
         days_remaining = (item.expires_on - today).days
@@ -830,6 +830,7 @@ def naive_fallback(payload, text, top_k=3):
            for sc, p in ranked[:top_k] if sc > 0]
     return out
 
+#棒グラフ
 @login_required
 def expiry_stats(request):
     today = date.today()
@@ -847,3 +848,18 @@ def expiry_stats(request):
         "safe":    qs.filter(expires_on__gt=d30).count(),
     }
     return JsonResponse(data)
+
+#円グラフ
+@login_required
+def category_stats(request):
+    qs = Item.objects.filter(user=request.user)
+
+    rows = qs.values('product_type').annotate(count=Count('id')).order_by('product_type')
+
+    labels = []
+    counts = []
+    for r in rows:
+        labels.append(r['product_type'] or '未設定')
+        counts.append(r['count'])
+
+    return JsonResponse({"labels": labels, "counts": counts})
