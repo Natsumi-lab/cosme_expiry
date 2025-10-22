@@ -854,12 +854,22 @@ def expiry_stats(request):
 def category_stats(request):
     qs = Item.objects.filter(user=request.user)
 
-    rows = qs.values('product_type').annotate(count=Count('id')).order_by('product_type')
+    #  Item.category_id ごとに件数を集計（NULLも含まれる可能性あり）
+    rows = (
+        qs.values('product_type_id')
+          .annotate(count=Count('id'))
+          .order_by('product_type_id')
+    )
 
-    labels = []
-    counts = []
+    # 使われているIDをまとめて取得し、id→表示名のマップを作成
+    ids = [r['product_type_id'] for r in rows if r['product_type_id'] is not None]
+    name_map = {t.id: str(t) for t in Taxon.objects.filter(id__in=ids)}
+
+    labels, counts = [], []
     for r in rows:
-        labels.append(r['product_type'] or '未設定')
+        pt_id = r['product_type_id']
+        labels.append(name_map.get(pt_id, '未設定'))
         counts.append(r['count'])
+
 
     return JsonResponse({"labels": labels, "counts": counts})
