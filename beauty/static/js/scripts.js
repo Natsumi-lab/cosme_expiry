@@ -175,13 +175,10 @@ function initCategoryChart() {
         },
       });
     })
-    .finally(() => { 
-      initCategoryChart._loading = false; 
+    .finally(() => {
+      initCategoryChart._loading = false;
     });
 }
-
-// ページロード時に起動（他の初期化の後でもOK）
-//document.addEventListener("DOMContentLoaded", initCategoryChart);
 
 document.addEventListener("DOMContentLoaded", initApp);
 
@@ -193,7 +190,7 @@ function initExpiryChart() {
   const labels = Object.keys(sampleData.expiryStatus);
   const data = Object.values(sampleData.expiryStatus);
 
-  // ステータス別カラーパレット（明度と色相の差を最大化して区別しやすくした色）
+  // ステータス別カラーパレット
   const colors = [
     "#B91C1C", // 期限切れ（濃い赤・最も暗い）
     "#FDE047", // 期限7日以内（明るい黄色・最も明るい）
@@ -446,16 +443,3 @@ window.addEventListener("resize", function () {
     expiryChart.resize();
   }
 });
-
-// サービスワーカーの登録（PWA化の準備）
-//if ('serviceWorker' in navigator) {
-//    window.addEventListener('load', () => {
-//        navigator.serviceWorker.register('/sw.js')
-//            .then((registration) => {
-//                console.log('SW registered: ', registration);
-//            })
-//            .catch((registrationError) => {
-//                console.log('SW registration failed: ', registrationError);
-//            });
-//    });
-//}
