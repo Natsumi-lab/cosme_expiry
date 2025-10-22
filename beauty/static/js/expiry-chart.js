@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }
 });
-document.addEventListener('DOMContentLoaded', initExpiryChart);
 
 // 期限別統計グラフを初期化
 function initExpiryChart() {
