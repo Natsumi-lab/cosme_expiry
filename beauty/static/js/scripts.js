@@ -302,60 +302,12 @@ function formatDate(dateString) {
 
 // 最近のアイテムを表示
 function displayRecentItems() {
+  // サーバーからデータが渡されるようになったため、この関数は使用しない
+  // 実データは Djangoテンプレートから直接描画されます
   const container = document.getElementById("recentItemsContainer");
   if (!container) return;
 
-  // 最新の4つのアイテムを表示
-  const recentItems = sampleData.recentItems.slice(0, 4);
-
-  container.innerHTML = recentItems
-    .map(
-      (item) => `
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card item-card h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="item-category">${item.category}</span>
-                        <span class="expiry-status ${item.status}">
-                            ${getStatusText(item.status)}
-                        </span>
-                    </div>
-                    <h6 class="card-title">${item.name}</h6>
-                    <div class="mt-3">
-                        <small class="text-muted d-block">
-                            <i class="fas fa-calendar-alt me-1"></i>
-                            開封日: ${formatDate(item.openedDate)}
-                        </small>
-                        <small class="text-muted d-block">
-                            <i class="fas fa-clock me-1"></i>
-                            ${
-                              item.daysLeft >= 0
-                                ? `あと${item.daysLeft}日`
-                                : `${Math.abs(item.daysLeft)}日経過`
-                            }
-                        </small>
-                    </div>
-                </div>
-                <div class="card-footer bg-transparent border-0">
-                    <div class="d-flex gap-1">
-                        <button class="btn btn-outline-primary btn-sm flex-fill">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-outline-secondary btn-sm flex-fill">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-outline-danger btn-sm flex-fill">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `
-    )
-    .join("");
-
-  // カードにアニメーションを追加
+  // カードにアニメーションを追加するのみ
   const cards = container.querySelectorAll(".card");
   cards.forEach((card, index) => {
     setTimeout(() => {
@@ -419,6 +371,7 @@ function initApp() {
     return;
   }
 
+  // 最近のアイテムのアニメーションを追加
   displayRecentItems();
   updateNotificationBadge();
   initSmoothScrolling();

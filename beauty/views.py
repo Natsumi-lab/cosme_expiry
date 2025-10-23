@@ -20,20 +20,65 @@ from openai import APITimeoutError
 from django.db.models import Count
 
 
+def get_all_items_qs(user):
+    """
+    「すべて」タブの条件と同じフィルタ＋並びでアイテムを取得する共通関数
+    """
+    return Item.objects.filter(user=user).select_related('product_type').order_by('-created_at')
+
+
+def build_items_with_data(qs):
+    """
+    アイテムクエリセットから表示用データを構築する共通関数
+    """
+    today = date.today()
+    items_with_data = []
+    
+    for item in qs:
+        days_remaining = (item.expires_on - today).days
+        
+        # リスクレベル判定
+        if days_remaining < 0:
+            risk_level = 'expired'
+            risk_text = '期限切れ'
+        elif days_remaining <= 7:
+            risk_level = 'critical'
+            risk_text = '期限7日以内'
+        elif days_remaining <= 14:
+            risk_level = 'warning'
+            risk_text = '期限14日以内'
+        elif days_remaining <= 30:
+            risk_level = 'caution'
+            risk_text = '期限30日以内'
+        else:
+            risk_level = 'safe'
+            risk_text = '余裕あり'
+        
+        items_with_data.append({
+            'item': item,
+            'days_remaining': days_remaining,
+            'days_remaining_abs': abs(days_remaining),
+            'risk_level': risk_level,
+            'risk_text': risk_text,
+        })
+    
+    return items_with_data
+
 
 @login_required
 def home(request):
     """
     ホームページビュー
-    統計データとサンプルアイテムを表示
+    統計データと最近登録されたアイテムを表示
     ログイン必須
     """
     # 最近登録されたアイテムを取得（新しい順に4件）
-    recent_items = Item.objects.order_by('-created_at')[:4]
-
-    # home.html に recent_items を渡す
+    recent_items_qs = get_all_items_qs(request.user)[:4]
+    recent_items_data = build_items_with_data(recent_items_qs)
+    
+    # home.html にデータを渡す
     context = {
-        'recent_items': recent_items,
+        'recent_items_data': recent_items_data,
     }
 
     return render(request, 'home.html', context)
@@ -348,32 +393,7 @@ def item_list(request):
     qs = qs.order_by(ordering)
 
     # ---- カード表示用：残日数＆リスク文言 ----
-    items_with_data = []
-    for item in qs:
-        days_remaining = (item.expires_on - today).days
-        if days_remaining < 0:
-            risk_level = 'expired'
-            risk_text  = '期限切れ'
-        elif days_remaining <= 7:
-            risk_level = 'critical'
-            risk_text  = '期限7日以内'
-        elif days_remaining <= 14:
-            risk_level = 'warning'
-            risk_text  = '期限14日以内'
-        elif days_remaining <= 30:
-            risk_level = 'caution'
-            risk_text  = '期限30日以内'
-        else:
-            risk_level = 'safe'
-            risk_text  = '余裕あり'
-
-        items_with_data.append({
-            'item': item,
-            'days_remaining': days_remaining,
-            'days_remaining_abs': abs(days_remaining),
-            'risk_level': risk_level,
-            'risk_text': risk_text,
-        })
+    items_with_data = build_items_with_data(qs)
 
     # ---- バッジ件数（相互排他の同じ境界で計算）----
     counts = {
