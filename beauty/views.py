@@ -854,7 +854,7 @@ def expiry_stats(request):
 def category_stats(request):
     qs = Item.objects.filter(user=request.user)
 
-    #  Item.category_id ごとに件数を集計（NULLも含まれる可能性あり）
+    #  外部キーは product_type（→ DB上は product_type_id）
     rows = (
         qs.values('product_type_id')
           .annotate(count=Count('id'))
