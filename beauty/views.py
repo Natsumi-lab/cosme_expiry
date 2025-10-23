@@ -28,7 +28,15 @@ def home(request):
     統計データとサンプルアイテムを表示
     ログイン必須
     """
-    return render(request, 'home.html')
+    # 最近登録されたアイテムを取得（新しい順に4件）
+    recent_items = Item.objects.order_by('-created_at')[:4]
+
+    # home.html に recent_items を渡す
+    context = {
+        'recent_items': recent_items,
+    }
+
+    return render(request, 'home.html', context)
 
 
 @method_decorator([csrf_protect, never_cache], name='dispatch')

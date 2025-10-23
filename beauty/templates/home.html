@@ -117,15 +117,56 @@
     </div>
 </div>
 
+{% load static %}
+
 <!-- Recent Items Preview -->
 <div class="row my-5">
     <div class="col-12">
         <h3 class="text-center mb-4">最近登録されたアイテム</h3>
+
         <div class="row" id="recentItemsContainer">
-            <!-- JavaScript で動的に生成 -->
+            {% if recent_items %}
+            {% for item in recent_items %}
+            <div class="col-6 col-md-3 mb-4">
+                <div class="card h-100">
+                    {% if item.image %}
+                    <img src="{{ item.image.url|default:item.image }}" class="card-img-top" alt="{{ item.name }}">
+                    {% elif item.image_url %}
+                    <img src="{{ item.image_url }}" class="card-img-top" alt="{{ item.name }}">
+                    {% else %}
+                    <img src="{% static 'img/no-image.png' %}" class="card-img-top" alt="no image">
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5 class="card-title text-truncate">{{ item.name }}</h5>
+
+                        {% if item.brand %}
+                        <p class="card-text small text-muted mb-1">
+                            {{ item.brand.name|default:item.brand }}
+                        </p>
+                        {% endif %}
+
+                        {% if item.created_at %}
+                        <p class="card-text small">登録日: {{ item.created_at|date:"Y-m-d" }}</p>
+                        {% endif %}
+
+                        {% if item.expires_at %}
+                        <span class="badge bg-warning text-dark">期限: {{ item.expires_at|date:"Y-m-d" }}</span>
+                        {% endif %}
+                    </div>
+
+                    <a href="/items/{{ item.id }}/" class="stretched-link"></a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-12 text-center text-muted">まだアイテムがありません。</div>
+            {% endif %}
         </div>
+
         <div class="text-center mt-4">
-            <a class="btn btn-outline-primary" href="#!">すべてのアイテムを見る</a>
+            <a class="btn btn-outline-primary" href="{% url 'beauty:item_list' %}">すべてのアイテムを見る</a>
+
         </div>
     </div>
 </div>
