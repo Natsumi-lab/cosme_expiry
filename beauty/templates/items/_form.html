@@ -81,6 +81,16 @@
                         </div>
 
                         <!-- Category Selection -->
+                        <div id="ai-suggest" class="mt-2" data-api-url="{% url 'beauty:suggest_category_api' %}">
+                            <button type="button" id="btn-suggest" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-magic me-1"></i> AIでカテゴリ候補を取得
+                            </button>
+                            <small class="text-muted d-block mt-1">
+                                商品名／ブランドをもとに最も細かいカテゴリ候補を提案します
+                            </small>
+                            <ul id="suggest-list" class="list-unstyled mt-2"></ul>
+                        </div>
+
                         <div class="mb-4">
                             <label for="{{ form.product_type.id_for_label }}" class="form-label fw-semibold required">
                                 <i class="fas fa-tags me-2 text-primary"></i>{{ form.product_type.label }}
@@ -96,16 +106,6 @@
                                 {% endfor %}
                             </div>
                             {% endif %}
-                        </div>
-
-                        <div id="ai-suggest" class="mt-2" data-api-url="{% url 'beauty:suggest_category_api' %}">
-                            <button type="button" id="btn-suggest" class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-magic me-1"></i> AIでカテゴリ候補を取得
-                            </button>
-                            <small class="text-muted d-block mt-1">
-                                商品名／ブランドをもとに最も細かいカテゴリ候補を提案します
-                            </small>
-                            <ul id="suggest-list" class="list-unstyled mt-2"></ul>
                         </div>
 
                         <!-- Date Information Row -->
