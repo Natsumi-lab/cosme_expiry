@@ -120,11 +120,7 @@ async function fetchCandidates() {
       .map(
         (c) => `
       <li class="d-flex align-items-center gap-2 mb-1">
-        <span><strong>${escapeHtml(c.path || "")}</strong>
-          <small class="text-muted">（信頼度: ${Math.round(
-            (c.confidence || 0) * 100
-          )}%）</small>
-        </span>
+        <span><strong>${escapeHtml(c.path || "")}</strong></span>
         <button type="button" class="btn btn-sm btn-outline-success pick" data-id="${
           c.taxon_id
         }">
