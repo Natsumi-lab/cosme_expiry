@@ -627,38 +627,63 @@ def mark_notifications_read(request):
     })
 
 
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.db.models import Count
+
 @login_required
 def get_notifications_summary(request):
-    """通知サマリー取得API（ヘッダー表示用）"""
+    """
+    通知サマリー取得API（ヘッダー＆各行バッジ用）
+    - 未読のみタイプ別に集計
+    - 返却は human な期限キー（expired/week/biweek/month）
+    """
     user = request.user
-    
-    # タイプ別の未読通知数を取得
-    notification_counts = {}
-    for notification_type, title in [
-        ('OVERWEEK', '使用期限を過ぎたアイテムがあります'),
-        ('D7', '期限7日以内のアイテムがあります'),
-        ('D14', '期限14日以内のアイテムがあります'),
-        ('D30', '期限30日以内のアイテムがあります'),
-    ]:
-        count = Notification.objects.filter(
-            user=user,
-            type=notification_type,
-            read_at__isnull=True
-        ).count()
-        
-        notification_counts[notification_type] = {
-            'count': count,
-            'title': title,
-            'has_unread': count > 0
-        }
-    
-    # 総未読数
-    total_unread = sum(item['count'] for item in notification_counts.values())
-    
+
+    # DBを1クエリで集計（未読のみ）
+    qs = (Notification.objects
+          .filter(user=user, read_at__isnull=True)
+          .values('type')
+          .annotate(cnt=Count('id')))
+
+    # type -> 表示キー/タイトル の対応
+    type_map = {
+        'OVERWEEK': ('expired', '使用期限を過ぎたアイテムがあります'),
+        'D7':       ('week',    '期限7日以内のアイテムがあります'),
+        'D14':      ('biweek',  '期限14日以内のアイテムがあります'),
+        'D30':      ('month',   '期限30日以内のアイテムがあります'),
+    }
+
+    # 0で初期化
+    buckets = {k: 0 for k, _ in type_map.values()}
+
+    # 旧構造の互換（必要なら残す）
+    notifications = {
+        t: {'count': 0, 'title': title, 'has_unread': False}
+        for t, (key, title) in {k: (v[0], v[1]) for k, v in type_map.items()}.items()
+    }
+
+    # 集計結果を反映
+    for row in qs:
+        t = row['type']
+        cnt = int(row['cnt'])
+        if t in type_map:
+            key, title = type_map[t]
+            buckets[key] = cnt
+            notifications[t] = {
+                'count': cnt,
+                'title': title,
+                'has_unread': cnt > 0
+            }
+
+    total_unread = sum(buckets.values())
+
     return JsonResponse({
-        'notifications': notification_counts,
-        'total_unread': total_unread
+        # 新：フロントで使いやすい期限キー別件数
+        'buckets': buckets,                     # 例: {"expired":1,"week":3,"biweek":0,"month":2}
+        'total_unread': total_unread,          # 例: 6
     })
+
 
 
 @login_required

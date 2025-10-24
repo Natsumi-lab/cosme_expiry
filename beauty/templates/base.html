@@ -61,40 +61,59 @@
                                     <!-- 期限切れ -->
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed notification-header" type="button"
-                                                data-notification-type="OVERWEEK"
+                                            <button
+                                                class="accordion-button collapsed notification-header d-flex align-items-center"
+                                                type="button" data-notification-type="OVERWEEK"
                                                 data-filter-url="{% url 'beauty:item_list' %}?tab=expired">
-                                                使用期限を過ぎたアイテムがあります
+                                                <span>使用期限を過ぎたアイテムがあります</span>
+                                                <span id="notifCountExpired"
+                                                    class="badge rounded-pill bg-danger ms-auto d-none"
+                                                    aria-label="期限切れの未読通知件数">0</span>
                                             </button>
                                         </h2>
                                     </div>
+
                                     <!-- 7日以内 -->
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed notification-header" type="button"
-                                                data-notification-type="D7"
+                                            <button
+                                                class="accordion-button collapsed notification-header d-flex align-items-center"
+                                                type="button" data-notification-type="D7"
                                                 data-filter-url="{% url 'beauty:item_list' %}?tab=week">
-                                                期限7日以内のアイテムがあります
+                                                <span>期限7日以内のアイテムがあります</span>
+                                                <span id="notifCountWeek"
+                                                    class="badge rounded-pill bg-danger ms-auto d-none"
+                                                    aria-label="期限7日以内の未読通知件数">0</span>
                                             </button>
                                         </h2>
                                     </div>
+
                                     <!-- 14日以内 -->
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed notification-header" type="button"
-                                                data-notification-type="D14"
+                                            <button
+                                                class="accordion-button collapsed notification-header d-flex align-items-center"
+                                                type="button" data-notification-type="D14"
                                                 data-filter-url="{% url 'beauty:item_list' %}?tab=biweek">
-                                                期限14日以内のアイテムがあります
+                                                <span>期限14日以内のアイテムがあります</span>
+                                                <span id="notifCountBiweek"
+                                                    class="badge rounded-pill bg-danger ms-auto d-none"
+                                                    aria-label="期限14日以内の未読通知件数">0</span>
                                             </button>
                                         </h2>
                                     </div>
+
                                     <!-- 30日以内 -->
                                     <div class="accordion-item">
                                         <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed notification-header" type="button"
-                                                data-notification-type="D30"
+                                            <button
+                                                class="accordion-button collapsed notification-header d-flex align-items-center"
+                                                type="button" data-notification-type="D30"
                                                 data-filter-url="{% url 'beauty:item_list' %}?tab=month">
-                                                期限30日以内のアイテムがあります
+                                                <span>期限30日以内のアイテムがあります</span>
+                                                <span id="notifCountMonth"
+                                                    class="badge rounded-pill bg-danger ms-auto d-none"
+                                                    aria-label="期限30日以内の未読通知件数">0</span>
                                             </button>
                                         </h2>
                                     </div>
