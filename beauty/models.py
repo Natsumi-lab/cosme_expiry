@@ -26,16 +26,34 @@ class Taxon(models.Model):
     full_path = models.CharField(max_length=300, blank=True, verbose_name="フルパス")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="作成日時")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="更新日時")
-    
+
+    shelf_life_months = models.PositiveIntegerField(
+        default=6,
+        verbose_name="使用期限（月数）",
+        help_text="開封から何か月後に使用期限となるかを設定します。"
+    )
+
+    SHELF_LIFE_ANCHOR_CHOICES = [
+        ('same_day', '同じ日付'),
+        ('end_of_month', '月末'),
+    ]
+    shelf_life_anchor = models.CharField(
+        max_length=12,
+        choices=SHELF_LIFE_ANCHOR_CHOICES,
+        default='end_of_month',
+        verbose_name="期限の基準日",
+        help_text="月末で締めるか、同日で締めるかを指定します。"
+    )
+
     @property
     def is_leaf(self):
         return not self.children.exists()
-    
+
     class Meta:
         verbose_name = "カテゴリ"
         verbose_name_plural = "カテゴリ"
         ordering = ['depth', 'name']
-    
+
     def save(self, *args, **kwargs):
         if self.parent:
             self.depth = self.parent.depth + 1
@@ -44,9 +62,10 @@ class Taxon(models.Model):
             self.depth = 0
             self.full_path = self.name
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.full_path
+
 
 # ===== Itemモデル（修正版） =====
 class Item(BaseModel):
