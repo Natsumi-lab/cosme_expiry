@@ -121,10 +121,10 @@ async function fetchCandidates() {
         (c) => `
       <li class="d-flex align-items-center gap-2 mb-1">
         <span><strong>${escapeHtml(c.path || "")}</strong></span>
-        <button type="button" class="btn btn-sm btn-outline-success pick" data-id="${
+        <button type="button" class="btn btn-sm btn-outline-success pick ms-3" data-id="${
           c.taxon_id
         }">
-          採用
+          決定
         </button>
       </li>
     `
@@ -162,12 +162,12 @@ function adoptCandidate(taxonId) {
     // 5. hiddenフィールドも同期（フォーム送信用）
     if (hiddenProductType) hiddenProductType.value = val;
 
-    // 6. 採用ボタンUI更新
+    // 6. 決定ボタンUI更新
     const btn = [...listSuggest.querySelectorAll(".pick")].find(
       (b) => b.dataset.id === val
     );
     if (btn) {
-      btn.textContent = "採用済み";
+      btn.textContent = "決定済み";
       btn.disabled = true;
     }
 

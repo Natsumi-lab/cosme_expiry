@@ -84,7 +84,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='更新日時')),
                 ('target', models.CharField(choices=[('category', 'カテゴリ'), ('product_name', '商品名'), ('brand', 'ブランド')], max_length=20, verbose_name='推定対象')),
                 ('suggested_text', models.TextField(verbose_name='LLM推定テキスト')),
-                ('accepted', models.BooleanField(default=False, verbose_name='採用')),
+                ('accepted', models.BooleanField(default=False, verbose_name='決定')),
                 ('item', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='beauty.item')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('chosen_taxon', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='user_choices', to='beauty.taxon', verbose_name='選択カテゴリ')),

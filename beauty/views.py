@@ -792,7 +792,7 @@ def suggest_category_api(request):
         if not candidates:
             candidates = naive_fallback(taxon_payload_pref, item_text, top_k=3)
 
-        # 最小ログ（採用は保存時に True を別途記録）
+        # 最小ログ（決定は保存時に True を別途記録）
         for c in candidates:
             LlmSuggestionLog.objects.create(
                 user=request.user, item=None,
