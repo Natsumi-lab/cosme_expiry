@@ -13,10 +13,10 @@
             <h1 class="display-4 fw-bold mb-4">コスメの使用期限を<br>スマートに管理</h1>
             <p class="lead mb-4">化粧品の開封日を登録するだけで、自動的に使用期限を計算。通知機能で期限切れを防止し、美容と衛生を両立します。</p>
             <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <a class="btn btn-primary btn-lg px-4 me-md-2" href="#!">
+                <a class="btn btn-primary btn-lg px-4 me-md-2" href="{% url 'beauty:item_new' %}">
                     <i class="fas fa-plus me-2"></i>アイテム登録
                 </a>
-                <a class="btn btn-outline-secondary btn-lg px-4" href="#!">
+                <a class="btn btn-outline-secondary btn-lg px-4" href="{% url 'beauty:item_list' %}">
                     <i class="fas fa-list me-2"></i>一覧を見る
                 </a>
             </div>
@@ -117,54 +117,75 @@
     </div>
 </div>
 
-{% load static %}
-
 <!-- Recent Items Preview -->
 <div class="row my-5">
     <div class="col-12">
         <h3 class="text-center mb-4">最近登録されたアイテム</h3>
 
         <div class="row g-3" id="recentItemsContainer">
-          {% if recent_items_data %}
+            {% if recent_items_data %}
             {% for item_data in recent_items_data %}
-              <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-6 col-md-4 col-lg-3">
                 <div class="card item-card h-100 shadow-sm">
-                  <div class="card-body d-flex flex-column">
-                    <div class="mb-2">
-                      <span class="badge badge-category">{{ item_data.item.product_type.name }}</span>
-                      <span class="badge badge-status-{{ item_data.item.status }} ms-1">
-                        {% if item_data.item.status == 'using' %}使用中{% else %}使用終了{% endif %}
-                      </span>
-                    </div>
-                    <h6 class="card-title mb-2 text-truncate" title="{{ item_data.item.name }}">{{ item_data.item.name }}</h6>
-                    {% if item_data.item.brand %}<p class="text-muted small mb-2">{{ item_data.item.brand }}</p>{% endif %}
-                    <div class="mt-auto d-flex justify-content-between align-items-end">
-                      <div>
-                        <div class="expiry-status expiry-{{ item_data.risk_level }}">{{ item_data.risk_text }}</div>
-                        <small class="text-muted">
-                          {% if item_data.days_remaining >= 0 %}あと{{ item_data.days_remaining }}日
-                          {% else %}{{ item_data.days_remaining_abs }}日経過{% endif %}
-                        </small>
-                      </div>
-                      <small class="text-muted">{{ item_data.item.expires_on|date:"Y/m/d" }}</small>
-                    </div>
-                  </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="mb-2">
+                            <span class="badge badge-category">{{ item_data.item.product_type.name }}</span>
+                            <span class="badge badge-status-{{ item_data.item.status }} ms-1">
+                                {% if item_data.item.status == 'using' %}使用中{% else %}使用終了{% endif %}
+                            </span>
+                        </div>
 
-                  <div class="card-footer bg-transparent border-0 d-flex gap-2 justify-content-start px-3 pb-3">
-                    <a href="{% url 'beauty:item_edit' item_data.item.id %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-pen"></i></a>
-                    <a href="{% url 'beauty:item_detail' item_data.item.id %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-eye"></i></a>
-                  </div>
-                </div>
-              </div>
+                        <h6 class="card-title mb-2 text-truncate" title="{{ item_data.item.name }}">
+                            {{ item_data.item.name }}
+                        </h6>
+
+                        {% if item_data.item.brand %}
+                        <p class="text-muted small mb-2">{{ item_data.item.brand }}</p>
+                        {% endif %}
+
+                        <div class="mt-auto">
+                            <div class="expiry-status expiry-{{ item_data.risk_level }}">
+                                {{ item_data.risk_text }}
+                            </div>
+                            <small class="text-muted">
+                                {% if item_data.days_remaining >= 0 %}
+                                あと{{ item_data.days_remaining }}日
+                                {% else %}
+                                {{ item_data.days_remaining_abs }}日経過
+                                {% endif %}
+                            </small>
+
+                            <div class="mt-1">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    使用期限日：{{ item_data.item.expires_on|date:"Y/m/d" }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 px-3 pb-3">
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'beauty:item_edit' item_data.item.id %}"
+                                class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="{% url 'beauty:item_detail' item_data.item.id %}"
+                                class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div> <!-- /.card -->
+            </div>
             {% endfor %}
-          {% else %}
+            {% else %}
             <div class="col-12 text-center text-muted">まだアイテムがありません。</div>
-          {% endif %}
+            {% endif %}
         </div>
 
         <div class="text-center mt-4">
             <a class="btn btn-outline-primary" href="{% url 'beauty:item_list' %}">すべてのアイテムを見る</a>
-
         </div>
     </div>
 </div>
