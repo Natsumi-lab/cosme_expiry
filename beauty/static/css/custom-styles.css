@@ -20,7 +20,8 @@
 }
 
 /* ページ全体のオーバーフロー制御 */
-html, body {
+html,
+body {
     max-width: 100%;
     overflow-x: hidden;
     margin: 0;
@@ -446,6 +447,10 @@ body {
     width: 100%;
     transition: all 0.3s ease;
     cursor: pointer;
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 2ch;
 }
 
 .notification-header:hover {
@@ -1272,20 +1277,20 @@ footer h6 {
         margin: 0 0.125rem;
         font-size: 0.9rem;
     }
-    
+
     .nav-tabs-custom .nav-link .badge {
         font-size: 0.7rem;
         padding: 0.2rem 0.4rem;
     }
-    
+
     .item-card .card-body {
         padding: 1rem;
     }
-    
+
     .item-image-placeholder {
         min-height: 100px;
     }
-    
+
     .filter-section {
         padding: 1rem;
     }
@@ -1299,16 +1304,16 @@ footer h6 {
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
-    
+
     .nav-tabs-custom::-webkit-scrollbar {
         display: none;
     }
-    
+
     .nav-tabs-custom .nav-link {
         white-space: nowrap;
         min-width: fit-content;
     }
-    
+
     .empty-state {
         padding: 2rem 1rem;
     }
