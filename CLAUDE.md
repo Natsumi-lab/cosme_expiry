@@ -80,6 +80,27 @@ touch .env
 echo "OPENAI_API_KEY=your-api-key-here" >> .env
 ```
 
+### Utility Scripts
+
+The project includes several utility scripts that can be run directly with Python:
+
+```bash
+# Initialize taxon hierarchy for product categories
+python init_taxons.py
+
+# List all taxons in the system
+python list_taxons.py
+
+# List all users in the system
+python list_users.py
+
+# Create sample items for testing
+python create_sample_items.py
+
+# Generate notifications for existing items
+python create_notifications.py
+```
+
 ## Architecture Overview
 
 ### Core Models (`beauty/models.py`)
@@ -106,6 +127,7 @@ echo "OPENAI_API_KEY=your-api-key-here" >> .env
    - Types: 30-day, 14-day, 7-day warnings, and overdue alerts
    - Links to User and Item with CASCADE deletion
    - Scheduled notification system with read status tracking
+   - Notification badge UI with counters for different timeframes
 
 5. **LlmSuggestionLog** (lines 156-199): AI integration tracking
    - Records LLM suggestions vs user choices for learning
@@ -138,10 +160,17 @@ Email-based authentication instead of username:
 - Custom JavaScript handling in `item-list.js` for AJAX loading of category options
 - Responsive card layout for displaying items with risk indicators
 
+**Notification System**:
+- Dropdown accordion interface for notification categories
+- Grid-based layout for notification headers with responsive spacing
+- Badge counters for each expiry timeframe (7-day, 14-day, 30-day, expired)
+- Real-time notification status updates via JavaScript
+
 **Design System**:
 - Primary: `#f8dec6` (Light Cream)
 - Accent: `#d3859c` (Dusty Rose)
 - Bootstrap 5.2.3 with responsive breakpoints
+- Risk status color coding: green (safe), yellow (7-day), orange (14-day), red (expired)
 
 ## Configuration Details
 
@@ -168,6 +197,7 @@ Email-based authentication instead of username:
 /items/<id>/              # Item detail view
 /items/<id>/edit/         # Edit item
 /api/taxons/              # Taxon hierarchy API
+/api/notifications/       # Notification API endpoints
 /admin/                   # Django admin interface
 ```
 
@@ -206,6 +236,30 @@ The application uses modern JavaScript for dynamic features:
 - `item-list.js`: Handles hierarchical filtering and AJAX category loading
 - `item-form.js`: Manages dynamic form behavior and validation
 - `scripts.js`: Core site functionality and Chart.js dashboard
+- `notifications.js`: Manages notification loading, badge updates, and read/unread status
+
+## Notification System
+
+### Notification Management Command
+Custom command (`beauty/management/commands/generate_notifications.py`) for generating time-based notifications:
+- Automated daily check for expiring items
+- Transaction-based atomic creation of notifications
+- Multiple notification types based on time remaining:
+  - `OVERWEEK`: Weekly reminders for expired items (Monday only)
+  - `D7`: 7-day expiry warnings
+  - `D14`: 14-day expiry warnings
+  - `D30`: 30-day expiry warnings
+- Database-driven scheduling with duplicate prevention
+
+### Notification APIs
+- `/api/notifications/summary/`: Returns counts of unread notifications by type
+- `/api/notifications/mark-read/`: Marks notifications as read based on type
+
+### Notification UI
+- Dropdown menu with styled notification headers
+- Badge counters for each notification category
+- Responsive grid layout with optimized spacing between text and badge
+- Animation effects for unread notification badges
 
 ## LLM Integration Framework
 
@@ -243,9 +297,15 @@ No testing framework currently configured. Standard Django tests available:
 - LLM integration framework structure
 - API endpoint for hierarchical taxon data
 - Item listing with filtering and sorting
+- Notification UI implementation with badge counts
+- Notification generation command structure
+- Notification styling and layout improvements
+
+**In Progress:**
+- Notification scheduling automation
+- API integration with frontend for real-time notification updates
 
 **Pending Implementation:**
-- Notification scheduling logic (models exist, scheduling needed)
 - Complete LLM API integration with OpenAI
 - Statistics dashboard backend (Chart.js ready with sample data)
 - Image processing completion
@@ -257,3 +317,4 @@ No testing framework currently configured. Standard Django tests available:
 - **Internationalization**: Japanese language with Asia/Tokyo timezone
 - **Responsive Design**: Bootstrap mobile-first approach
 - **Error Handling**: Comprehensive exception handling in views
+- **Grid Layout**: Modern CSS grid used for notification headers and responsive elements

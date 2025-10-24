@@ -439,8 +439,8 @@ body {
 .notification-header {
     background: transparent;
     border: none;
-    padding: 1rem 1.25rem;
-    font-size: 0.9rem;
+    padding: 1.2rem 1.25rem 2.5rem 1.25rem;
+    font-size: 1.1rem;
     font-weight: 500;
     color: var(--dark-color);
     text-align: left;
@@ -450,7 +450,8 @@ body {
     display: grid !important;
     grid-template-columns: 1fr auto;
     align-items: center;
-    column-gap: 2ch;
+    justify-content: center;
+    column-gap: 1.5ch;
 }
 
 .notification-header:hover {
