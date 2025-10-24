@@ -76,7 +76,7 @@ class Command(BaseCommand):
                     user=item.user,
                     item=item,
                     type='OVERWEEK',
-                    title='使用期限を過ぎたアイテムがあります',
+                    title='使用期限切れのアイテムがあります',
                     body=f'{item.name}の使用期限が過ぎています（期限: {item.expires_on}）',
                     scheduled_for=timezone.now()
                 )

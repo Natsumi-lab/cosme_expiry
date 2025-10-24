@@ -85,3 +85,5 @@ create_sample_items.py
 init_taxons.py
 list_taxons.py
 list_users.py
+test-notification.html
+test-notification-updated.html

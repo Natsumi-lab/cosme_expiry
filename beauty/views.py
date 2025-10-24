@@ -648,7 +648,7 @@ def get_notifications_summary(request):
 
     # type -> 表示キー/タイトル の対応
     type_map = {
-        'OVERWEEK': ('expired', '使用期限を過ぎたアイテムがあります'),
+        'OVERWEEK': ('expired', '使用期限切れのアイテムがあります'),
         'D7':       ('week',    '期限7日以内のアイテムがあります'),
         'D14':      ('biweek',  '期限14日以内のアイテムがあります'),
         'D30':      ('month',   '期限30日以内のアイテムがあります'),
