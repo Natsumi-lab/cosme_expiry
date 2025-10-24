@@ -191,7 +191,7 @@ class LlmSuggestionLog(BaseModel):
         verbose_name="選択カテゴリ"
     )
     
-    accepted = models.BooleanField(default=False, verbose_name="採用")
+    accepted = models.BooleanField(default=False, verbose_name="決定")
     
     class Meta:
         verbose_name = "LLM提案ログ"
