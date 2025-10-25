@@ -41,17 +41,20 @@
                 <div class="d-none d-lg-block ms-4">
                     <ul class="navbar-nav d-flex flex-row">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{% url 'beauty:home' %}">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+                                aria-current="page" href="{% url 'beauty:home' %}">
                                 <i class="fas fa-home me-1"></i>ホーム
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'beauty:item_list' %}">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'item_list' %}active{% endif %}"
+                                href="{% url 'beauty:item_list' %}">
                                 <i class="fas fa-list me-1"></i>アイテム一覧
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'beauty:item_new' %}">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'item_new' %}active{% endif %}"
+                                href="{% url 'beauty:item_new' %}">
                                 <i class="fas fa-plus me-1"></i>アイテム追加
                             </a>
                         </li>
@@ -271,8 +274,10 @@
                     <div class="footer-right">
                         <h6 class="text-white mb-3">リンク</h6>
                         <div class="footer-links d-flex flex-wrap gap-3">
-                            <a href="{% url 'beauty:terms' %}" class="text-white-50 text-decoration-none footer-link">利用規約</a>
-                            <a href="{% url 'beauty:privacy' %}" class="text-white-50 text-decoration-none footer-link">プライバシーポリシー</a>
+                            <a href="{% url 'beauty:terms' %}"
+                                class="text-white-50 text-decoration-none footer-link">利用規約</a>
+                            <a href="{% url 'beauty:privacy' %}"
+                                class="text-white-50 text-decoration-none footer-link">プライバシーポリシー</a>
                         </div>
                     </div>
                 </div>
