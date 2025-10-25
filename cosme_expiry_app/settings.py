@@ -108,6 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'beauty.backends.EmailBackend',             
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

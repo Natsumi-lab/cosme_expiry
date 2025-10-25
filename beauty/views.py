@@ -91,7 +91,7 @@ class SignUpView(CreateView):
     """ユーザー登録ビュー"""
     form_class = SignUpForm
     template_name = 'signup.html'
-    success_url = reverse_lazy('beauty:home')  # 後でログインページに変更
+    success_url = reverse_lazy('beauty:home')  
     
     def dispatch(self, request, *args, **kwargs):
         """ログイン済みユーザーはホームにリダイレクト"""
@@ -101,26 +101,23 @@ class SignUpView(CreateView):
         return super().dispatch(request, *args, **kwargs)
     
     def form_valid(self, form):
-        """登録成功時の処理"""
-        response = super().form_valid(form)
-        
-        # 自動ログイン
-        login(self.request, self.object)
-        
-        # 成功メッセージ
-        #messages.success(
-        #    self.request, 
-        #    f'ようこそ、{self.object.username}さん！アカウントの登録が完了しました。'
-        #)
-        
-        return response
-    
+        email = form.cleaned_data['username']   # ← フィールド名は usernameだが中身はメールアドレス
+        password = form.cleaned_data['password']
+
+        #  EmailBackend を使ってメールで認証
+        user = authenticate(self.request, email=email, password=password)
+        if user is not None and user.is_active:
+            login(self.request, user)
+            return super().form_valid(form)
+
+        if user is not None and not user.is_active:
+            form.add_error(None, 'このアカウントは無効化されています。')
+        else:
+            form.add_error(None, 'メールアドレスまたはパスワードが正しくありません。')
+        return self.form_invalid(form)
+
     def form_invalid(self, form):
-        """登録失敗時の処理"""
-        messages.error(
-            self.request, 
-            '入力内容に誤りがあります。以下のエラーを確認してください。'
-        )
+        messages.error(self.request, 'ログインに失敗しました。入力内容を確認してください。')
         return super().form_invalid(form)
     
     def get_context_data(self, **kwargs):
@@ -151,30 +148,16 @@ class SignInView(FormView):
         email = form.cleaned_data['username']  # フォームではusernameフィールドにメールアドレスが入る
         password = form.cleaned_data['password']
         
-        # メールアドレスでユーザーを検索してusernameを取得
-        from django.contrib.auth.models import User
-        try:
-            user_obj = User.objects.get(email=email)
-            # 見つかったユーザーでパスワードチェック
-            if user_obj.check_password(password):
-                if user_obj.is_active:
-                    # ログイン実行
-                    login(self.request, user_obj)
-                    
-                    # 成功メッセージ
-                    #messages.success(
-                    #    self.request,
-                    #    f'おかえりなさい、{user_obj.get_full_name() or user_obj.username}さん！'
-                    #)
-                    
-                    return super().form_valid(form)
-                else:
-                    form.add_error(None, 'このアカウントは無効化されています。')
-            else:
-                form.add_error(None, 'メールアドレスまたはパスワードが正しくありません。')
-        except User.DoesNotExist:
-            form.add_error('username', 'このメールアドレスは登録されていません。')
-        
+        # ★ EmailBackend を使ってメールで認証
+        user = authenticate(self.request, email=email, password=password)
+
+        if user is not None and user.is_active:
+            login(self.request, user)
+            return super().form_valid(form)
+        if user is not None and not user.is_active:
+            form.add_error(None, 'このアカウントは無効化されています。')
+        else:
+            form.add_error(None, 'メールアドレスまたはパスワードが正しくありません。')
         return self.form_invalid(form)
     
     def form_invalid(self, form):
