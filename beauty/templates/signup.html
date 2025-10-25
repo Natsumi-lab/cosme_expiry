@@ -12,7 +12,8 @@
                         <i class="fas fa-user-plus fa-3x text-primary"></i>
                     </div>
                     <h1 class="h2 fw-bold mb-3">アカウント登録</h1>
-                    <p class="text-muted">CosmeLimiter / コスメリミッターアプリへようこそ！<br>アカウントを作成して、効率的な化粧品管理を始めましょう。</p>
+                    <p class="text-muted">CosmeLimiter(コスメリミッター)アプリへようこそ！
+                        <br>アカウントを作成して、効率的な化粧品管理を始めましょう。</p>
                 </div>
 
                 <!-- エラーメッセージ表示 -->
@@ -120,8 +121,8 @@
                                 <div class="form-check">
                                     {{ form.terms_accepted }}
                                     <label class="form-check-label" for="{{ form.terms_accepted.id_for_label }}">
-                                        <a href="#!" class="text-decoration-none">利用規約</a>と
-                                        <a href="#!" class="text-decoration-none">プライバシーポリシー</a>に同意する
+                                        <a href="{% url 'beauty:terms' %}" class="text-decoration-none">利用規約</a>と
+                                        <a href="{% url 'beauty:privacy' %}" class="text-decoration-none">プライバシーポリシー</a>に同意する
                                     </label>
                                 </div>
                                 {% if form.terms_accepted.errors %}
