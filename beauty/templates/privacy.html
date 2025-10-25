@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="mb-4 text-center fw-bold">プライバシーポリシー（CosmeLimiter）</h1>
+                    <p class="text-muted text-end mb-4">最終更新日：2025-10-26</p>
+
+                    <div class="privacy-introduction mb-4">
+                        <p>開発者は、本アプリにおけるユーザーの個人情報を以下の方針に基づき取り扱います。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">1. 収集する情報</h2>
+                        <p>アカウント情報：ユーザーネーム、メールアドレス</p>
+                        <p>アプリ内データ：登録したコスメ情報（商品名、カテゴリ、開封日、使用期限等）</p>
+                        <p>技術情報：デモ版につき、アクセス解析・広告識別子・SNS連携等は取得しません。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">2. 取得方法</h2>
+                        <p>ユーザーの入力によって取得します。自動取得する解析データはありません。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">3. 利用目的</h2>
+                        <ul>
+                            <li>アカウントの作成・認証、基本機能の提供</li>
+                            <li>期限計算・通知などのコア機能の実行</li>
+                            <li>不具合時の調査・品質改善（必要最小限の範囲）</li>
+                        </ul>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">4. 保存場所と期間</h2>
+                        <p>現時点（デモ版）：外部解析・外部サービスは使用しません。</p>
+                        <p>ローカル保存で動作する場合、データは端末内に保存されます。</p>
+                        <p>サーバー保存を導入する場合は、保存先・保管期間・安全管理措置を本ポリシーに追記し、必要に応じて同意を再取得します。</p>
+                        <p>アカウント削除の申し出が可能な運用へ移行した際は、合理的な期間内に削除します。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">5. 第三者提供</h2>
+                        <p>法令に基づく場合を除き、第三者提供は行いません。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">6. 委託</h2>
+                        <p>現時点で個人データの取扱いを外部に委託していません。将来委託する場合は、委託先の適切な監督を行います。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">7. セキュリティ</h2>
+                        <p>不正アクセス・漏えい窓口は設けていません。公開提供時に連絡先を整備し、改めて掲示します。ただしデモ特性上、完全な安全性を保証するものではありません。端末紛失・共有端末での利用にはご注意ください。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">8. ユーザーの権利</h2>
+                        <p>将来オンライン提供を行う場合、ユーザーは保有個人データの開示・訂正・利用停止・削除を求めることができます。手続き方法は公開時に案内します。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">9. クッキー等</h2>
+                        <p>トラッキング目的のクッキーは使用しません（セッション管理等、機能上必要なものを除く）。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">10. 未成年の利用</h2>
+                        <p>全年齢対象ですが、未成年は保護者の同意のうえ利用してください。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">11. ポリシーの変更</h2>
+                        <p>本ポリシーは随時変更されることがあります。重要な変更を行う際は、アプリ内で周知します。</p>
+                    </div>
+
+                    <div class="privacy-section mb-4">
+                        <h2 class="h4 fw-bold">12. 連絡先</h2>
+                        <p>本アプリはポートフォリオ用のため個別のお問い合わせ窓口は設けていません。公開提供時に連絡先を整備し、改めて掲示します。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'beauty:home' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>ホームに戻る
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .privacy-section {
+        border-left: 3px solid #f8dec6;
+        padding-left: 1rem;
+    }
+    
+    .privacy-section h2 {
+        color: #d3859c;
+        margin-bottom: 1rem;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 0.75rem;
+    }
+    
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+    }
+</style>
+{% endblock %}

@@ -18,6 +18,14 @@ import json
 from .llm import suggest_taxon_candidates
 from openai import APITimeoutError
 from django.db.models import Count
+
+def terms(request):
+    """利用規約ページを表示"""
+    return render(request, 'terms.html')
+
+def privacy(request):
+    """プライバシーポリシーページを表示"""
+    return render(request, 'privacy.html')
 from datetime import date
 import calendar
 
