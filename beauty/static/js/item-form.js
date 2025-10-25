@@ -263,10 +263,10 @@ if (btnSuggest && apiUrl) {
       return;
     }
 
+    // 常に上書きして計算
     function update() {
-      const taxonId = productSel.value;
+      const rule = RULES[productSel.value];
       const openedStr = openedInput.value;
-      const rule = RULES[taxonId];
       if (!rule || !openedStr) return;
 
       const opened = parseYMD(openedStr);
@@ -277,16 +277,16 @@ if (btnSuggest && apiUrl) {
         rule.months || 0,
         rule.anchor || "end_of_month"
       );
+      // ここで常に上書きする（以前の値が入っていてもセット）
       expiresInput.value = toYMD(exp);
-
-      // 見た目で「自動入力」を示したい場合（任意）
-      // expiresInput.classList.add('bg-light');
+      // 変更イベントを発火させて、他のバリデーション等にも通知（任意）
+      expiresInput.dispatchEvent(new Event("change", { bubbles: true }));
+      expiresInput.dispatchEvent(new Event("input", { bubbles: true }));
     }
 
-    // どちらかが変わったら毎回計算
+    // どちらかが変わったら毎回再計算して即上書き
     productSel.addEventListener("change", update);
     openedInput.addEventListener("change", update);
-    // 手入力で日付を打つケースに備えて input でも拾う
     openedInput.addEventListener("input", update);
 
     // 初期表示（編集画面）
