@@ -31,6 +31,9 @@
                 <a class="navbar-brand fw-bold" href="{% url 'beauty:home' %}">
                     <i class="fas fa-spa me-2"></i>コスメ期限管理
                 </a>
+                <script>
+                    window.USER_AUTHENTICATED = {% if user.is_authenticated %}true{% else %} false{% endif %};
+                </script>
 
                 <!-- ↓ ログインしているときだけ表示 -->
                 {% if user.is_authenticated %}
