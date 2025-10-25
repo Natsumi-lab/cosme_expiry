@@ -54,7 +54,8 @@
 
                     <div class="privacy-section mb-4">
                         <h2 class="h4 fw-bold">7. セキュリティ</h2>
-                        <p>不正アクセス・漏えい窓口は設けていません。公開提供時に連絡先を整備し、改めて掲示します。ただしデモ特性上、完全な安全性を保証するものではありません。端末紛失・共有端末での利用にはご注意ください。</p>
+                        <p>不正アクセス・漏えい窓口は設けていません。公開提供時に連絡先を整備し、改めて掲示します。ただしデモ特性上、完全な安全性を保証するものではありません。端末紛失・共有端末での利用にはご注意ください。
+                        </p>
                     </div>
 
                     <div class="privacy-section mb-4">
@@ -85,8 +86,9 @@
             </div>
 
             <div class="text-center mt-4">
-                <a href="{% url 'beauty:home' %}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>ホームに戻る
+                <a href="#" class="btn btn-outline-primary"
+                    onclick="if (history.length > 1) { history.back(); } else { window.location.href='{% url 'beauty:home' %}'; } return false;">
+                    <i class="fas fa-arrow-left me-2"></i>前のページに戻る
                 </a>
             </div>
         </div>
@@ -100,17 +102,17 @@
         border-left: 3px solid #f8dec6;
         padding-left: 1rem;
     }
-    
+
     .privacy-section h2 {
         color: #d3859c;
         margin-bottom: 1rem;
     }
-    
+
     .card {
         border: none;
         border-radius: 0.75rem;
     }
-    
+
     @media (max-width: 768px) {
         .card-body {
             padding: 1.5rem !important;
