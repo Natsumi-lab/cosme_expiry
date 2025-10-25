@@ -124,7 +124,7 @@ class SignUpView(CreateView):
         """テンプレートコンテキストに追加データを渡す"""
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'アカウント登録'
-        context['page_description'] = 'コスメ期限管理アプリのアカウントを新規作成します。'
+        context['page_description'] = 'CosmeLimiter / コスメリミッターアプリのアカウントを新規作成します。'
         return context
 
 
@@ -172,7 +172,7 @@ class SignInView(FormView):
         """テンプレートコンテキストに追加データを渡す"""
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'ログイン'
-        context['page_description'] = 'コスメ期限管理アプリにログインします。'
+        context['page_description'] = 'CosmeLimiter / コスメリミッターアプリにログインします。'
         return context
 
 

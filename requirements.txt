@@ -1,4 +1,4 @@
-# コスメ期限管理アプリ - 依存関係
+# CosmeLimiter / コスメリミッターアプリ - 依存関係
 # Python 3.13+ 対応
 
 # Core Django

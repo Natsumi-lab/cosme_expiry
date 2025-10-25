@@ -1,5 +1,5 @@
 /*!
- * コスメ期限管理アプリ - メインスクリプト
+ * CosmeLimiter / コスメリミッターアプリ - メインスクリプト
  * 統計グラフと最近のアイテム表示機能を実装
  */
 
@@ -391,7 +391,7 @@ function initApp() {
   initSmoothScrolling();
   initTooltips();
 
-  console.log("コスメ期限管理アプリが初期化されました");
+  console.log("CosmeLimiter / コスメリミッターアプリが初期化されました");
 }
 
 // DOM読み込み完了後に初期化
