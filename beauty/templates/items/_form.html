@@ -184,3 +184,6 @@
         </div>
     </div>
 </div>
+{% load static %}
+{{ taxon_rules|json_script:"taxon-rules" }}
+<script src="{% static 'js/item-form.js' %}"></script>
