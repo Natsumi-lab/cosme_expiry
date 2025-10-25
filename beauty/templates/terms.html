@@ -10,7 +10,8 @@
                     <p class="text-muted text-end mb-4">最終更新日：2025-10-26</p>
 
                     <div class="terms-introduction mb-4">
-                        <p>この利用規約（以下「本規約」）は、個人開発者（以下「開発者」）が提供するアプリ「CosmeLimiter（コスメリミッター）」（以下「本アプリ」）の利用条件を定めるものです。本アプリを利用される方（以下「ユーザー」）は、本規約に同意したものとみなします。</p>
+                        <p>この利用規約（以下「本規約」）は、個人開発者（以下「開発者」）が提供するアプリ「CosmeLimiter（コスメリミッター）」（以下「本アプリ」）の利用条件を定めるものです。本アプリを利用される方（以下「ユーザー」）は、本規約に同意したものとみなします。
+                        </p>
                     </div>
 
                     <div class="terms-section mb-4">
@@ -87,14 +88,15 @@
                     <div class="terms-section mb-4">
                         <h2 class="h4 fw-bold">12. お問い合わせ</h2>
                         <p>本アプリはポートフォリオ用のため個別のお問い合わせ対応は原則行っておりません。<br>
-                        （公開版を提供する場合は問い合わせ窓口を案内します。）</p>
+                            （公開版を提供する場合は問い合わせ窓口を案内します。）</p>
                     </div>
                 </div>
             </div>
 
             <div class="text-center mt-4">
-                <a href="{% url 'beauty:home' %}" class="btn btn-outline-primary">
-                    <i class="fas fa-arrow-left me-2"></i>ホームに戻る
+                <a href="#" class="btn btn-outline-primary"
+                    onclick="if (history.length > 1) { history.back(); } else { window.location.href='{% url 'beauty:home' %}'; } return false;">
+                    <i class="fas fa-arrow-left me-2"></i>前のページに戻る
                 </a>
             </div>
         </div>
@@ -108,17 +110,17 @@
         border-left: 3px solid #f8dec6;
         padding-left: 1rem;
     }
-    
+
     .terms-section h2 {
         color: #d3859c;
         margin-bottom: 1rem;
     }
-    
+
     .card {
         border: none;
         border-radius: 0.75rem;
     }
-    
+
     @media (max-width: 768px) {
         .card-body {
             padding: 1.5rem !important;
