@@ -542,48 +542,6 @@ def item_list(request):
         'product_type': product_type,
         'status': status,
     })  
-    
-    # カテゴリフィルタ（指定されたカテゴリとその子孫を含む）
-    # if product_type:
-    #     try:
-    #         taxon = Taxon.objects.get(id=product_type)
-    #         # 自身と子孫のTaxonIDを取得
-    #         descendant_ids = [product_type]
-    #         def get_descendants(parent_id):
-    #             children = Taxon.objects.filter(parent_id=parent_id).values_list('id', flat=True)
-    #             for child_id in children:
-    #                 descendant_ids.append(child_id)
-    #                 get_descendants(child_id)
-    #         get_descendants(product_type)
-    #         items = items.filter(product_type_id__in=descendant_ids)
-    #     except Taxon.DoesNotExist:
-    #         pass
-    
-    
-    # 各タブのアイテム数を計算
-    all_items = Item.objects.filter(user=request.user)
-    
-    tab_counts = {
-        'all': all_items.count(),
-        'expired': all_items.filter(expires_on__lt=today).count(),
-        'week': all_items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=7)).count(),
-        'biweek': all_items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=14)).count(),
-        'month': all_items.filter(expires_on__gte=today, expires_on__lte=today + timedelta(days=30)).count(),
-        'safe': all_items.filter(expires_on__gt=today + timedelta(days=30)).count(),
-    }
-    
-    context = {
-        'items_with_data': items_with_data,
-        'tab_counts': tab_counts,
-        'current_tab': tab,
-        'current_search': search,
-        'current_status': status,
-        'current_sort': sort,
-        'page_title': 'アイテム一覧',
-        'page_description': '登録したコスメアイテムの一覧を表示します'
-    }
-    
-    return render(request, 'items/item_list.html', context)
 
 
 @login_required
