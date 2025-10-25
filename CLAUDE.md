@@ -40,6 +40,9 @@ python manage.py test beauty
 
 # Create test data
 python manage.py shell
+
+# Generate notifications (scheduled task)
+python manage.py generate_notifications
 ```
 
 ### Virtual Environment
@@ -101,6 +104,46 @@ python create_sample_items.py
 python create_notifications.py
 ```
 
+## Project Structure
+
+```
+cosme_expiry_app/          # Main project directory
+├── beauty/                # Main app directory
+│   ├── management/        # Custom management commands
+│   │   └── commands/      
+│   │       └── generate_notifications.py # Notification generation
+│   ├── migrations/        # Database migrations
+│   ├── static/            # Static files (CSS, JS)
+│   │   ├── css/           # Stylesheets
+│   │   ├── js/            # JavaScript files
+│   │   │   ├── expiry-chart.js      # Chart.js integration
+│   │   │   ├── item-form.js         # Item form handling
+│   │   │   ├── item-list.js         # Item list filtering
+│   │   │   ├── notifications.js     # Notification handling
+│   │   │   └── scripts.js           # Core functionality
+│   │   └── img/           # Images
+│   ├── templates/         # HTML templates
+│   ├── admin.py           # Admin site configuration
+│   ├── apps.py            # App configuration
+│   ├── backends.py        # Auth backend for email login
+│   ├── forms.py           # Form definitions
+│   ├── llm.py             # LLM integration
+│   ├── models.py          # Data models
+│   ├── urls.py            # URL routing
+│   └── views.py           # View functions
+├── cosme_expiry_app/      # Project configuration
+│   ├── settings.py        # Django settings
+│   ├── urls.py            # Root URL configuration
+│   ├── wsgi.py            # WSGI configuration
+│   └── asgi.py            # ASGI configuration
+├── create_*.py            # Utility scripts
+├── init_taxons.py         # Initialization script
+├── list_*.py              # Reporting scripts
+├── venv/                  # Virtual environment
+├── requirements.txt       # Dependencies
+└── manage.py              # Django management script
+```
+
 ## Architecture Overview
 
 ### Core Models (`beauty/models.py`)
@@ -114,6 +157,7 @@ python create_notifications.py
    - Auto-calculates `depth` and `full_path` on save via custom save method
    - `is_leaf` property determines if category can be assigned to items
    - Used for organizing products (e.g., Makeup > Lips > Lip Gloss)
+   - Includes shelf life configuration (months and anchor type)
 
 3. **Item** (lines 52-127): Main product entity
    - User ownership enforced via ForeignKey with CASCADE deletion
@@ -263,12 +307,16 @@ Custom command (`beauty/management/commands/generate_notifications.py`) for gene
 
 ## LLM Integration Framework
 
-**Framework Functions** (`beauty/views.py:163-201`):
-- `process_llm_suggestion()`: Framework for LLM API calls with Taxon suggestions
+**Framework Functions**:
+- `process_llm_suggestion()` (`beauty/views.py:163-201`): Framework for LLM API calls with Taxon suggestions
 - `confirm_llm_suggestion()`: User confirmation handling and learning log
+- `suggest_taxon_candidates()` (`beauty/llm.py:28-62`): OpenAI API integration that returns taxon suggestions
 
-**Management Commands**:
-- `generate_notifications.py`: Custom command for scheduled notification generation
+**LLM Configuration**:
+- Uses GPT model for category suggestions (`beauty/llm.py`)
+- JSON response format for structured output
+- Error handling with fallback to empty suggestions
+- Configurable confidence thresholds
 
 ## Development Environment
 

@@ -17,6 +17,10 @@ urlpatterns = [
     # Settings
     path('settings/', views.settings, name='settings'),
     
+    # Pages
+    path('terms/', views.terms, name='terms'),
+    path('privacy/', views.privacy, name='privacy'),
+    
     # API
     path('api/taxons/', views.api_taxons, name='api_taxons'),
     path('api/notifications/summary/', views.get_notifications_summary, name='notifications_summary'),
