@@ -54,7 +54,7 @@ function getCookie(name) {
     return decodeURIComponent(parts.pop().split(";").shift());
   return null;
 }
-const csrftoken = getCookie("csrftoken");
+const aiCsrfToken = getCookie("csrftoken");
 
 // DOM参照
 const aiBox = document.getElementById("ai-suggest");
@@ -102,7 +102,7 @@ async function fetchCandidates() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": csrftoken || "",
+        "X-CSRFToken": aiCsrfToken || "",
       },
       body: JSON.stringify(payload),
     });
@@ -189,3 +189,114 @@ if (btnSuggest && apiUrl) {
   });
 }
 // ==================== /AIカテゴリ候補 ====================
+
+//===================== 期限自動計算 =======================
+(() => {
+  "use strict";
+
+  // 1) Djangoから埋め込んだtaxon_rules を読む
+  function loadTaxonRules() {
+    const el = document.getElementById("taxon-rules");
+    if (!el) return {};
+    try {
+      return JSON.parse(el.textContent);
+    } catch {
+      return {};
+    }
+  }
+
+  // 2) 要素取得
+  function nodes() {
+    return {
+      productSel: document.getElementById("id_product_type"),
+      openedInput: document.getElementById("id_opened_on"),
+      expiresInput: document.getElementById("id_expires_on"),
+    };
+  }
+
+  // 3) 日付ユーティリティ
+  function pad(n) {
+    return String(n).padStart(2, "0");
+  }
+  function lastDayOfMonth(y, m) {
+    return new Date(y, m, 0).getDate();
+  }
+  function parseYMD(s) {
+    if (!s) return null;
+    const [yy, mm, dd] = s.split("-").map(Number);
+    const dt = new Date(yy, (mm || 1) - 1, dd || 1);
+    if (
+      dt.getFullYear() !== yy ||
+      dt.getMonth() + 1 !== mm ||
+      dt.getDate() !== dd
+    )
+      return null;
+    return dt;
+  }
+  function toYMD(d) {
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+  function addMonthsAndAnchor(opened, months, anchor) {
+    const y = opened.getFullYear();
+    const m = opened.getMonth() + 1;
+    let nm = m + Number(months);
+    const ny = y + Math.floor((nm - 1) / 12);
+    const nmon = ((nm - 1) % 12) + 1;
+    const ld = lastDayOfMonth(ny, nmon);
+    const day = Math.min(opened.getDate(), ld);
+    let res = new Date(ny, nmon - 1, day);
+    if (anchor === "end_of_month") res = new Date(ny, nmon - 1, ld);
+    return res;
+  }
+
+  // 4) メイン
+  function setupExpiry() {
+    const RULES = loadTaxonRules();
+    const { productSel, openedInput, expiresInput } = nodes();
+
+    if (!productSel || !openedInput || !expiresInput) {
+      console.warn("[expiry] inputs not found", {
+        productSel,
+        openedInput,
+        expiresInput,
+      });
+      return;
+    }
+
+    function update() {
+      const taxonId = productSel.value;
+      const openedStr = openedInput.value;
+      const rule = RULES[taxonId];
+      if (!rule || !openedStr) return;
+
+      const opened = parseYMD(openedStr);
+      if (!opened) return;
+
+      const exp = addMonthsAndAnchor(
+        opened,
+        rule.months || 0,
+        rule.anchor || "end_of_month"
+      );
+      expiresInput.value = toYMD(exp);
+
+      // 見た目で「自動入力」を示したい場合（任意）
+      // expiresInput.classList.add('bg-light');
+    }
+
+    // どちらかが変わったら毎回計算
+    productSel.addEventListener("change", update);
+    openedInput.addEventListener("change", update);
+    // 手入力で日付を打つケースに備えて input でも拾う
+    openedInput.addEventListener("input", update);
+
+    // 初期表示（編集画面）
+    update();
+  }
+
+  // DOMができてから実行
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupExpiry);
+  } else {
+    setupExpiry();
+  }
+})();

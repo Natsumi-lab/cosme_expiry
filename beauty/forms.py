@@ -137,7 +137,7 @@ class ItemForm(forms.ModelForm):
         queryset=Taxon.objects.filter(children__isnull=True),  # 葉ノードのみ
         widget=forms.Select(attrs={
             'class': 'form-select',
-            'id': 'product_type'
+            'id': 'id_product_type'
         }),
         label='商品カテゴリ',
         help_text='最も詳細なカテゴリを選択してください',
@@ -191,7 +191,7 @@ class ItemForm(forms.ModelForm):
         widget=forms.DateInput(attrs={
             'class': 'form-control',
             'type': 'date',
-            'id': 'opened_on'
+            'id': 'id_opened_on'
         }),
         label='開封日'
     )
@@ -200,7 +200,7 @@ class ItemForm(forms.ModelForm):
         widget=forms.DateInput(attrs={
             'class': 'form-control',
             'type': 'date',
-            'id': 'expires_on'
+            'id': 'id_expires_on'
         }),
         label='使用期限'
     )
@@ -219,6 +219,7 @@ class ItemForm(forms.ModelForm):
     class Meta:
         model = Item
         fields = ['product_type', 'name', 'brand', 'color_code', 'opened_on', 'expires_on', 'memo']
+
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.http import require_POST
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpRequest
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
 from datetime import date, timedelta
@@ -18,6 +18,8 @@ import json
 from .llm import suggest_taxon_candidates
 from openai import APITimeoutError
 from django.db.models import Count
+from datetime import date
+import calendar
 
 
 def get_all_items_qs(user):
@@ -258,6 +260,22 @@ def confirm_llm_suggestion(log_id, user_confirmed_taxon_id):
     return chosen_taxon
 
 
+# 期限計算ヘルパー
+def _calc_expiry(opened_on: date, months: int, anchor: str) -> date:
+    """開封日 + months を基準に、anchor（same_day / end_of_month）で丸める"""
+    y = opened_on.year
+    m = opened_on.month + int(months)
+    y += (m - 1) // 12
+    m = ((m - 1) % 12) + 1
+    last_day = calendar.monthrange(y, m)[1]
+    d = min(opened_on.day, last_day)
+    result = date(y, m, d)
+    if anchor == 'end_of_month':
+        ld = calendar.monthrange(result.year, result.month)[1]
+        result = date(result.year, result.month, ld)
+    return result
+
+
 @login_required
 def item_new(request):
     """アイテム新規登録ビュー"""
@@ -267,6 +285,16 @@ def item_new(request):
             item = form.save(commit=False)
             item.user = request.user
             
+            # --- 保険：期限の自動計算（画面JSが動かない場合に備える） ---
+            if not item.expires_on and item.product_type_id and item.opened_on:
+                taxon = Taxon.objects.only('shelf_life_months', 'shelf_life_anchor').get(id=item.product_type_id)
+                item.expires_on = _calc_expiry(item.opened_on, taxon.shelf_life_months, taxon.shelf_life_anchor)
+                item.expires_overridden = False
+            else:
+                # 期限をユーザーが入力して送ってきた場合は手動上書きとみなす
+                if item.expires_on:
+                    item.expires_overridden = True
+
             # 画像アップロード処理
             if 'image' in request.FILES:
                 # 後でPillowを使った画像処理を追加予定
@@ -287,13 +315,121 @@ def item_new(request):
     else:
         form = ItemForm()
     
+    # --- Taxonごとの期限ルールをテンプレに渡す ---
+    taxon_rules = {
+        str(t.id): {"months": t.shelf_life_months, "anchor": t.shelf_life_anchor}
+        for t in Taxon.objects.only('id', 'shelf_life_months', 'shelf_life_anchor')
+    }
     context = {
         'form': form,
         'page_title': 'アイテム新規登録',
-        'page_description': '新しいコスメアイテムを登録します'
+        'page_description': '新しいコスメアイテムを登録します',
+        'taxon_rules': taxon_rules,
     }
     
     return render(request, 'items/new.html', context)
+
+
+@login_required
+def item_edit(request, id):
+    """アイテム編集ビュー"""
+    # ログインユーザーのアイテムのみ取得（セキュリティ対策）
+    try:
+        item = Item.objects.get(id=id, user=request.user)
+    except Item.DoesNotExist:
+        other_user_item = Item.objects.filter(id=id).first()
+        if other_user_item:
+            raise PermissionDenied("このアイテムを編集する権限がありません。")
+        else:
+            raise Http404("アイテムが見つかりません。")
+    
+    if request.method == 'POST':
+        form = ItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            # 差分チェック
+            has_changes = False
+            changed_product_type = False
+            changed_opened_on = False
+            changed_expires_on = False
+
+            for field_name in form.fields:
+                original_value = getattr(item, field_name)
+                new_value = form.cleaned_data[field_name]
+
+                if field_name == 'product_type':
+                    orig_id = getattr(original_value, 'id', None)
+                    new_id = getattr(new_value, 'id', None)
+                    if orig_id != new_id:
+                        has_changes = True
+                        changed_product_type = True
+                        # break しない（他の変更も拾いたい場合がある）
+                elif field_name == 'opened_on':
+                    if original_value != new_value:
+                        has_changes = True
+                        changed_opened_on = True
+                elif field_name == 'expires_on':
+                    if original_value != new_value:
+                        has_changes = True
+                        changed_expires_on = True
+                elif field_name == 'image':
+                    if new_value != original_value:
+                        has_changes = True
+                else:
+                    if original_value != new_value:
+                        has_changes = True
+
+            if not has_changes:
+                messages.info(request, '変更はありません。')
+                # JS用ルールを渡して再表示
+                taxon_rules = {
+                    str(t.id): {"months": t.shelf_life_months, "anchor": t.shelf_life_anchor}
+                    for t in Taxon.objects.only('id', 'shelf_life_months', 'shelf_life_anchor')
+                }
+                return render(request, 'items/edit.html', {
+                    'form': form,
+                    'item': item,
+                    'page_title': f'アイテム編集 - {item.name}',
+                    'page_description': f'{item.name}の情報を編集します',
+                    'taxon_rules': taxon_rules,
+                })
+
+            # 変更がある場合は保存（保険：必要なら期限を再計算）
+            updated = form.save(commit=False)
+
+            # 「カテゴリ or 開封日が変わった」かつ「期限はユーザーが編集していない」→ 自動再計算
+            if (changed_product_type or changed_opened_on) and not changed_expires_on:
+                if updated.product_type_id and updated.opened_on:
+                    taxon = Taxon.objects.only('shelf_life_months', 'shelf_life_anchor').get(id=updated.product_type_id)
+                    updated.expires_on = _calc_expiry(updated.opened_on, taxon.shelf_life_months, taxon.shelf_life_anchor)
+                    updated.expires_overridden = False
+            else:
+                # 期限をユーザーが編集した場合は手動上書き扱い
+                if changed_expires_on:
+                    updated.expires_overridden = True
+
+            updated.save()
+            messages.success(request, 'アイテム情報を更新しました。')
+            return redirect('beauty:item_detail', id=updated.id)
+        else:
+            messages.error(request, 'アイテムの更新に失敗しました。入力内容を確認してください。')
+    else:
+        form = ItemForm(instance=item)
+
+    # 初期表示やバリデーションエラー時にJSが使えるよう、Taxonルールを渡す
+    taxon_rules = {
+        str(t.id): {"months": t.shelf_life_months, "anchor": t.shelf_life_anchor}
+        for t in Taxon.objects.only('id', 'shelf_life_months', 'shelf_life_anchor')
+    }
+
+    context = {
+        'form': form,
+        'item': item,
+        'page_title': f'アイテム編集 - {item.name}',
+        'page_description': f'{item.name}の情報を編集します',
+        'taxon_rules': taxon_rules,
+    }
+    return render(request, 'items/edit.html', context)   
+
 
 @login_required
 def item_list(request):
@@ -460,69 +596,6 @@ def item_list(request):
 
 
 @login_required
-def item_edit(request, id):
-    """アイテム編集ビュー"""
-    # ログインユーザーのアイテムのみ取得（セキュリティ対策）
-    try:
-        item = Item.objects.get(id=id, user=request.user)
-    except Item.DoesNotExist:
-        other_user_item = Item.objects.filter(id=id).first()
-        if other_user_item:
-            raise PermissionDenied("このアイテムを編集する権限がありません。")
-        else:
-            raise Http404("アイテムが見つかりません。")
-    
-    if request.method == 'POST':
-        form = ItemForm(request.POST, request.FILES, instance=item)
-        if form.is_valid():
-            # 差分チェック
-            has_changes = False
-            for field_name in form.fields:
-                original_value = getattr(item, field_name)
-                new_value = form.cleaned_data[field_name]
-                
-                # 特別な処理が必要なフィールド
-                if field_name == 'product_type':
-                    if original_value.id != new_value.id:
-                        has_changes = True
-                        break
-                elif field_name == 'image':
-                    if new_value != original_value:
-                        has_changes = True
-                        break
-                elif original_value != new_value:
-                    has_changes = True
-                    break
-            
-            if not has_changes:
-                messages.info(request, '変更はありません。')
-                return render(request, 'items/edit.html', {
-                    'form': form,
-                    'item': item,
-                    'page_title': f'アイテム編集 - {item.name}',
-                    'page_description': f'{item.name}の情報を編集します'
-                })
-            
-            # 変更がある場合は保存
-            updated_item = form.save()
-            messages.success(request, 'アイテム情報を更新しました。')
-            return redirect('beauty:item_detail', id=updated_item.id)
-        else:
-            messages.error(request, 'アイテムの更新に失敗しました。入力内容を確認してください。')
-    else:
-        form = ItemForm(instance=item)
-    
-    context = {
-        'form': form,
-        'item': item,
-        'page_title': f'アイテム編集 - {item.name}',
-        'page_description': f'{item.name}の情報を編集します'
-    }
-    
-    return render(request, 'items/edit.html', context)
-
-
-@login_required
 def item_detail(request, id):
     """アイテム詳細ビュー"""
     # ログインユーザーのアイテムのみ取得（セキュリティ対策）
@@ -627,10 +700,6 @@ def mark_notifications_read(request):
     })
 
 
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
-from django.db.models import Count
-
 @login_required
 def get_notifications_summary(request):
     """
@@ -683,7 +752,6 @@ def get_notifications_summary(request):
         'buckets': buckets,                     # 例: {"expired":1,"week":3,"biweek":0,"month":2}
         'total_unread': total_unread,          # 例: 6
     })
-
 
 
 @login_required
@@ -756,6 +824,7 @@ def settings(request):
     }
     
     return render(request, 'settings.html', context)
+
 
 @login_required
 @require_POST
@@ -883,6 +952,7 @@ def naive_fallback(payload, text, top_k=3):
            for sc, p in ranked[:top_k] if sc > 0]
     return out
 
+
 #棒グラフ
 @login_required
 def expiry_stats(request):
@@ -901,6 +971,7 @@ def expiry_stats(request):
         "safe":    qs.filter(expires_on__gt=d30).count(),
     }
     return JsonResponse(data)
+
 
 #円グラフ
 @login_required
