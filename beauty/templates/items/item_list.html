@@ -76,7 +76,7 @@
                         <input type="hidden" name="search" value="{{ current_search }}">
                         <input type="hidden" name="product_type" value="{{ product_type }}">
                         <input type="hidden" name="status" value="{{ status }}">
-                        
+
                         <!-- 検索バー -->
                         <div class="row mb-3">
                             <div class="col-md-8">
@@ -191,27 +191,28 @@
                             {% endif %}
 
                             <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-end">
-                                    <div>
-                                        <div class="expiry-status expiry-{{ item_data.risk_level }}">
-                                            {{ item_data.risk_text }}
-                                        </div>
-                                        <small class="text-muted">
-                                            {% if item_data.days_remaining >= 0 %}
-                                            あと{{ item_data.days_remaining }}日
-                                            {% else %}
-                                            {{ item_data.days_remaining_abs }}日経過
-                                            {% endif %}
-                                        </small>
-                                    </div>
-                                    <div class="text-end">
-                                        <small class="text-muted d-block">
-                                            {{ item_data.item.expires_on|date:"Y/m/d" }}
-                                        </small>
-                                    </div>
+                                <!-- 期限バッジ（同じ） -->
+                                <div class="expiry-status expiry-{{ item_data.risk_level }}">
+                                    {{ item_data.risk_text }}
+                                </div>
+
+                                <!-- あと〇日／〇日経過：1行で表示 -->
+                                <small class="text-muted text-nowrap">
+                                    {% if item_data.days_remaining >= 0 %}
+                                    あと{{ item_data.days_remaining }}日
+                                    {% else %}
+                                    {{ item_data.days_remaining_abs }}日経過
+                                    {% endif %}
+                                </small>
+
+                                <!-- 使用期限日：Homeと同じフォーマット -->
+                                <div class="mt-1">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar-alt me-1"></i>
+                                        使用期限日：{{ item_data.item.expires_on|date:"Y/m/d" }}
+                                    </small>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
