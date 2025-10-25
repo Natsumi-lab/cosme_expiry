@@ -12,17 +12,17 @@
                         <i class="fas fa-user-plus fa-3x text-primary"></i>
                     </div>
                     <h1 class="h2 fw-bold mb-3">アカウント登録</h1>
-                    <p class="text-muted">コスメ期限管理アプリへようこそ！<br>アカウントを作成して、効率的な化粧品管理を始めましょう。</p>
+                    <p class="text-muted">CosmeLimiter / コスメリミッターアプリへようこそ！<br>アカウントを作成して、効率的な化粧品管理を始めましょう。</p>
                 </div>
 
                 <!-- エラーメッセージ表示 -->
                 {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="閉じる"></button>
-                        </div>
-                    {% endfor %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="閉じる"></button>
+                </div>
+                {% endfor %}
                 {% endif %}
 
                 <!-- サインアップフォーム -->
@@ -30,7 +30,7 @@
                     <div class="card-body p-4">
                         <form method="post" novalidate class="signup-form">
                             {% csrf_token %}
-                            
+
                             <!-- ユーザーネーム -->
                             <div class="mb-4">
                                 <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">
@@ -38,14 +38,14 @@
                                 </label>
                                 {{ form.username }}
                                 {% if form.username.help_text %}
-                                    <div class="form-text">{{ form.username.help_text }}</div>
+                                <div class="form-text">{{ form.username.help_text }}</div>
                                 {% endif %}
                                 {% if form.username.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.username.errors %}
-                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                                        {% endfor %}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.username.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                             </div>
 
@@ -56,14 +56,14 @@
                                 </label>
                                 {{ form.email }}
                                 {% if form.email.help_text %}
-                                    <div class="form-text">{{ form.email.help_text }}</div>
+                                <div class="form-text">{{ form.email.help_text }}</div>
                                 {% endif %}
                                 {% if form.email.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.email.errors %}
-                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                                        {% endfor %}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                             </div>
 
@@ -74,20 +74,20 @@
                                 </label>
                                 <div class="position-relative">
                                     {{ form.password1 }}
-                                    <button type="button" class="btn btn-outline-secondary password-toggle" 
-                                            data-target="#{{ form.password1.id_for_label }}" aria-label="パスワードを表示">
+                                    <button type="button" class="btn btn-outline-secondary password-toggle"
+                                        data-target="#{{ form.password1.id_for_label }}" aria-label="パスワードを表示">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
                                 {% if form.password1.help_text %}
-                                    <div class="form-text">{{ form.password1.help_text }}</div>
+                                <div class="form-text">{{ form.password1.help_text }}</div>
                                 {% endif %}
                                 {% if form.password1.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.password1.errors %}
-                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                                        {% endfor %}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password1.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                             </div>
 
@@ -98,20 +98,20 @@
                                 </label>
                                 <div class="position-relative">
                                     {{ form.password2 }}
-                                    <button type="button" class="btn btn-outline-secondary password-toggle" 
-                                            data-target="#{{ form.password2.id_for_label }}" aria-label="パスワードを表示">
+                                    <button type="button" class="btn btn-outline-secondary password-toggle"
+                                        data-target="#{{ form.password2.id_for_label }}" aria-label="パスワードを表示">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
                                 {% if form.password2.help_text %}
-                                    <div class="form-text">{{ form.password2.help_text }}</div>
+                                <div class="form-text">{{ form.password2.help_text }}</div>
                                 {% endif %}
                                 {% if form.password2.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.password2.errors %}
-                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                                        {% endfor %}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password2.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                             </div>
 
@@ -125,11 +125,11 @@
                                     </label>
                                 </div>
                                 {% if form.terms_accepted.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.terms_accepted.errors %}
-                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
-                                        {% endfor %}
-                                    </div>
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.terms_accepted.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                    {% endfor %}
+                                </div>
                                 {% endif %}
                             </div>
 
@@ -144,7 +144,8 @@
                             <div class="text-center">
                                 <p class="mb-0 text-muted">
                                     既にアカウントをお持ちですか？
-                                    <a href="{% url 'beauty:signin' %}" class="text-decoration-none fw-semibold">ログイン</a>
+                                    <a href="{% url 'beauty:signin' %}"
+                                        class="text-decoration-none fw-semibold">ログイン</a>
                                 </p>
                             </div>
                         </form>
@@ -165,152 +166,152 @@
 
 <!-- JavaScript -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // パスワード表示切り替え機能
-    const passwordToggles = document.querySelectorAll('.password-toggle');
-    
-    passwordToggles.forEach(function(toggle) {
-        toggle.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const passwordField = document.querySelector(targetId);
-            const icon = this.querySelector('i');
-            
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-                this.setAttribute('aria-label', 'パスワードを隠す');
-            } else {
-                passwordField.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-                this.setAttribute('aria-label', 'パスワードを表示');
-            }
-        });
-    });
+    document.addEventListener('DOMContentLoaded', function () {
+        // パスワード表示切り替え機能
+        const passwordToggles = document.querySelectorAll('.password-toggle');
 
-    // フォーム送信時のバリデーション
-    const form = document.querySelector('.signup-form');
-    const submitButton = form.querySelector('button[type="submit"]');
-    
-    form.addEventListener('submit', function(e) {
-        // 利用規約チェックボックスの確認
-        const termsCheckbox = document.getElementById('terms-checkbox');
-        if (!termsCheckbox.checked) {
-            e.preventDefault();
-            alert('利用規約とプライバシーポリシーへの同意が必要です。');
-            termsCheckbox.focus();
-            return;
-        }
-        
-        // 送信ボタンの二重送信防止
-        submitButton.disabled = true;
-        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>登録中...';
-        
-        // エラーが発生した場合に備えて、3秒後にボタンを再有効化
-        setTimeout(function() {
-            submitButton.disabled = false;
-            submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>アカウントを登録';
-        }, 3000);
-    });
-    
-    // リアルタイムパスワード強度チェック
-    const password1 = document.getElementById('password1');
-    if (password1) {
-        password1.addEventListener('input', function() {
-            const password = this.value;
-            const hasLetter = /[A-Za-z]/.test(password);
-            const hasNumber = /\d/.test(password);
-            const isLongEnough = password.length >= 8;
-            
-            // パスワード強度インジケーターは後で実装可能
+        passwordToggles.forEach(function (toggle) {
+            toggle.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const passwordField = document.querySelector(targetId);
+                const icon = this.querySelector('i');
+
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                    this.setAttribute('aria-label', 'パスワードを隠す');
+                } else {
+                    passwordField.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                    this.setAttribute('aria-label', 'パスワードを表示');
+                }
+            });
         });
-    }
-});
+
+        // フォーム送信時のバリデーション
+        const form = document.querySelector('.signup-form');
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', function (e) {
+            // 利用規約チェックボックスの確認
+            const termsCheckbox = document.getElementById('terms-checkbox');
+            if (!termsCheckbox.checked) {
+                e.preventDefault();
+                alert('利用規約とプライバシーポリシーへの同意が必要です。');
+                termsCheckbox.focus();
+                return;
+            }
+
+            // 送信ボタンの二重送信防止
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>登録中...';
+
+            // エラーが発生した場合に備えて、3秒後にボタンを再有効化
+            setTimeout(function () {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i>アカウントを登録';
+            }, 3000);
+        });
+
+        // リアルタイムパスワード強度チェック
+        const password1 = document.getElementById('password1');
+        if (password1) {
+            password1.addEventListener('input', function () {
+                const password = this.value;
+                const hasLetter = /[A-Za-z]/.test(password);
+                const hasNumber = /\d/.test(password);
+                const isLongEnough = password.length >= 8;
+
+                // パスワード強度インジケーターは後で実装可能
+            });
+        }
+    });
 </script>
 
 <style>
-/* サインアップページ専用スタイル */
-.signup-container {
-    min-height: calc(100vh - 120px);
-    background: linear-gradient(135deg, #f8dec6 0%, #ffffff 100%);
-}
-
-.signup-icon {
-    color: var(--primary-color, #d3859c);
-}
-
-.card {
-    border-radius: 1rem;
-    backdrop-filter: blur(10px);
-}
-
-.password-toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    color: #6c757d;
-    font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
-    z-index: 10;
-}
-
-.password-toggle:hover {
-    color: #495057;
-}
-
-.position-relative .form-control {
-    padding-right: 45px;
-}
-
-.form-label {
-    color: #495057;
-}
-
-.form-control:focus {
-    border-color: var(--primary-color, #d3859c);
-    box-shadow: 0 0 0 0.2rem rgba(211, 133, 156, 0.25);
-}
-
-.btn-primary {
-    background-color: var(--primary-color, #d3859c);
-    border-color: var(--primary-color, #d3859c);
-    transition: all 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: var(--secondary-color, #c7b19c);
-    border-color: var(--secondary-color, #c7b19c);
-    transform: translateY(-1px);
-}
-
-.form-check-input:checked {
-    background-color: var(--primary-color, #d3859c);
-    border-color: var(--primary-color, #d3859c);
-}
-
-.text-primary {
-    color: var(--primary-color, #d3859c) !important;
-}
-
-/* エラーメッセージスタイル */
-.invalid-feedback {
-    color: #dc3545;
-    font-size: 0.875rem;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 576px) {
+    /* サインアップページ専用スタイル */
     .signup-container {
-        padding: 2rem 0;
+        min-height: calc(100vh - 120px);
+        background: linear-gradient(135deg, #f8dec6 0%, #ffffff 100%);
     }
-    
-    .card-body {
-        padding: 1.5rem !important;
+
+    .signup-icon {
+        color: var(--primary-color, #d3859c);
     }
-}
+
+    .card {
+        border-radius: 1rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        color: #6c757d;
+        font-size: 0.875rem;
+        padding: 0.25rem 0.5rem;
+        z-index: 10;
+    }
+
+    .password-toggle:hover {
+        color: #495057;
+    }
+
+    .position-relative .form-control {
+        padding-right: 45px;
+    }
+
+    .form-label {
+        color: #495057;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color, #d3859c);
+        box-shadow: 0 0 0 0.2rem rgba(211, 133, 156, 0.25);
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color, #d3859c);
+        border-color: var(--primary-color, #d3859c);
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color, #c7b19c);
+        border-color: var(--secondary-color, #c7b19c);
+        transform: translateY(-1px);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color, #d3859c);
+        border-color: var(--primary-color, #d3859c);
+    }
+
+    .text-primary {
+        color: var(--primary-color, #d3859c) !important;
+    }
+
+    /* エラーメッセージスタイル */
+    .invalid-feedback {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+
+    /* レスポンシブ対応 */
+    @media (max-width: 576px) {
+        .signup-container {
+            padding: 2rem 0;
+        }
+
+        .card-body {
+            padding: 1.5rem !important;
+        }
+    }
 </style>
 {% endblock %}

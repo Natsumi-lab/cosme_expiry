@@ -10,9 +10,10 @@
 <div class="hero-section">
     <div class="row align-items-center">
         <div class="col-lg-6">
-            <h1 class="display-4 fw-bold mb-4">コスメの使用期限を<br>スマートに管理</h1>
-            <p class="lead mb-4">化粧品の開封日を登録するだけで、自動的に使用期限を計算。通知機能で期限切れを防止し、美容と衛生を両立します。</p>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <h1 class="display-6 fw-bold mb-4 text-center">キレイを守る<br>化粧品の期限管理アプリ</h1>
+            <p class="lead mb-4 text-center">化粧品の開封日を登録するだけで、自動的に使用期限を計算。
+                通知機能で期限切れを防止し、美容と衛生を両立します。</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-center text-center">
                 <a class="btn btn-primary btn-lg px-4 me-md-2" href="{% url 'beauty:item_new' %}">
                     <i class="fas fa-plus me-2"></i>アイテム登録
                 </a>
@@ -23,41 +24,57 @@
         </div>
         <div class="col-lg-6">
             <div class="hero-image-container">
-                <img src="{% static 'images/header.jpg' %}" alt="コスメ期限管理アプリのイメージ" class="hero-image img-fluid rounded">
+                <img src="{% static 'images/header.jpg' %}" alt="CosmeLimiter / コスメリミッターアプリのイメージ"
+                    class="hero-image img-fluid rounded">
             </div>
         </div>
     </div>
 </div>
 <!-- Statistics Row-->
-<div class="row gx-4 gx-lg-5 my-5">
+<div class="row text-center">
     <div class="col-lg-4 mb-4">
-        <div class="card stats-card text-center h-100">
+        <div class="card stats-card h-100">
             <div class="card-body">
                 <i class="fas fa-chart-pie fa-3x mb-3"></i>
                 <h3 class="card-title">統計・分析</h3>
-                <p class="card-text">カテゴリ別の使用状況や期限切れ傾向を可視化し、より効率的なコスメ管理をサポートします。</p>
+                <p class="card-text">
+                    使用状況や期限切れの傾向をグラフで<br>
+                    可視化。コスメの使用ペースをひと目で把握し、<br>
+                    日々のケアをより効率的にサポートします。
+                </p>
             </div>
         </div>
     </div>
+
     <div class="col-lg-4 mb-4">
-        <div class="card stats-card text-center h-100">
+        <div class="card stats-card h-100">
             <div class="card-body">
                 <i class="fas fa-bell fa-3x mb-3"></i>
                 <h3 class="card-title">スマート通知</h3>
-                <p class="card-text">期限30日前、14日前、7日前に自動通知。期限超過後は毎週お知らせして無駄を防止します。</p>
+                <p class="card-text">
+                    期限の30日前、14日前、7日前に自動で<br>
+                    お知らせ。期限切れ後も週ごとに通知し、<br>
+                    無駄なくキレイを保てるよう支援します。
+                </p>
             </div>
         </div>
     </div>
+
     <div class="col-lg-4 mb-4">
-        <div class="card stats-card text-center h-100">
+        <div class="card stats-card h-100">
             <div class="card-body">
                 <i class="fas fa-robot fa-3x mb-3"></i>
                 <h3 class="card-title">AI補完機能</h3>
-                <p class="card-text">商品名から自動でカテゴリや形状を推測し、衛生リスクや使用ペースのアドバイスを提供します。</p>
+                <p class="card-text">
+                    商品名やブランドからAIが自動分類。<br>
+                    カテゴリを推定して入力の手間を減らし、<br>
+                    登録作業をスムーズにサポートします。
+                </p>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- Charts Row-->
 <div class="row gx-4 gx-lg-5 my-5">
