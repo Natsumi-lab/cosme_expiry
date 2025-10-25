@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.http import Http404, JsonResponse, HttpRequest
 from django.core.exceptions import PermissionDenied
 from django.utils import timezone
@@ -752,6 +752,14 @@ def get_notifications_summary(request):
         'buckets': buckets,                     # 例: {"expired":1,"week":3,"biweek":0,"month":2}
         'total_unread': total_unread,          # 例: 6
     })
+
+
+@require_GET
+def notification_summary(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'detail': 'Authentication required'}, status=401)
+    # 通知集計を返す
+    return JsonResponse({"total_unread": 0, "buckets": {}})
 
 
 @login_required

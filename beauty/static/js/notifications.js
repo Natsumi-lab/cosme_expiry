@@ -17,9 +17,51 @@ document.addEventListener("DOMContentLoaded", function () {
  * 通知サマリーを取得してバッジを更新
  */
 function loadNotificationSummary() {
-  fetch("/api/notifications/summary/")
-    .then((response) => response.json())
+  if (!window.USER_AUTHENTICATED) {
+    console.log("未ログインのため、通知サマリーは取得しません。");
+    return;
+  }
+
+  fetch("/api/notifications/summary/", {
+    // 認証セッションを使う場合の保険
+    credentials: "same-origin",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  })
+    .then((response) => {
+      // リダイレクトされた＝多くはログインページへ
+      if (response.redirected) {
+        console.warn(
+          "通知APIがリダイレクトされました（未ログインの可能性）:",
+          response.url
+        );
+        return null; // 以降処理しない
+      }
+
+      // 未認証など
+      if (response.status === 401 || response.status === 403) {
+        console.warn(`通知APIが未認証/禁止: HTTP ${response.status}`);
+        return null;
+      }
+
+      // 失敗系はエラーにする
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      // JSON以外（= HTMLなど）が返ってきたら弾く
+      const ct = (response.headers.get("content-type") || "").toLowerCase();
+      if (!ct.includes("application/json")) {
+        console.warn("通知APIがJSON以外を返しました（HTML等）");
+        return null;
+      }
+
+      return response.json();
+    })
     .then((data) => {
+      if (!data) return;
+
       // 全体バッジ更新（既存処理）
       updateNotificationBadge(data.total_unread);
 
