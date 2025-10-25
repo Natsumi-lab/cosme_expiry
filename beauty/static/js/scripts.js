@@ -97,7 +97,9 @@ function initCategoryChart() {
   fetch("/api/category-stats/", { credentials: "same-origin" })
     .then((r) => (r.ok ? r.json() : Promise.reject(r)))
     .then((json) => {
-      const labels = json.labels || [];
+      // フルラベルと短縮ラベルを生成
+      const fullLabels = json.labels || [];
+      const labels = fullLabels.map((l) => (l || "").split(">").pop().trim());
       const data = json.counts || [];
 
       const palette = [
@@ -137,12 +139,19 @@ function initCategoryChart() {
             },
             tooltip: {
               callbacks: {
+                // ツールチップのタイトルも葉ノードのみを表示
+                title: (items) => {
+                  const idx = items?.[0]?.dataIndex ?? 0;
+                  const label = fullLabels[idx] || "";
+                  return label.split(">").pop().trim();
+                },
+                // 個数と割合のみ表示
                 label: (ctx) => {
                   const total =
                     ctx.dataset.data.reduce((a, b) => a + b, 0) || 1;
                   const val = ctx.parsed || 0;
                   const pct = ((val * 100) / total).toFixed(1);
-                  return `${ctx.label}: ${val}個 (${pct}%)`;
+                  return `${val}個 (${pct}%)`;
                 },
               },
             },
@@ -152,9 +161,9 @@ function initCategoryChart() {
     })
     .catch((err) => {
       console.error("category-stats fetch error:", err);
-      // フェイルセーフ（読み込み失敗表示）
       const ex = Chart.getChart(el);
       if (ex) ex.destroy();
+
       new Chart(el.getContext("2d"), {
         type: "doughnut",
         data: {
