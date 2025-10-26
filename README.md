@@ -7,7 +7,7 @@
 そのカテゴリをもとに **開封日を入力するだけで使用期限を自動計算。**  
 もう、使用期限は覚えなくていいのです。  
 
-![ヘッダー画像](assets/images/readme_img.png")
+![ヘッダー画像](/assets/images/readme_img.png")
 
 ---
 
@@ -100,7 +100,7 @@
 ## 🧭 開発環境セットアップ
 
 ```bash
-git clone <リポジトリURL>
+git clone https://github.com/Natsumi-lab/cosme_expiry.git
 cd cosme_expiry
 python -m venv venv
 venv\Scripts\activate     # macOS/Linux: source venv/bin/activate
@@ -113,7 +113,7 @@ python manage.py runserver
 ## 🌐 アクセス
 
 アプリ起動後、以下のURLにアクセスしてください：  
-👉 [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+👉 (http://127.0.0.1:8000/)
 
 ---
 
