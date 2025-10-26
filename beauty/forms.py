@@ -218,7 +218,7 @@ class ItemForm(forms.ModelForm):
     
     class Meta:
         model = Item
-        fields = ['product_type', 'name', 'brand', 'color_code', 'opened_on', 'expires_on', 'memo']
+        fields = ['image', 'product_type', 'name', 'brand', 'color_code', 'opened_on', 'expires_on', 'memo']
 
     
     def __init__(self, *args, **kwargs):
