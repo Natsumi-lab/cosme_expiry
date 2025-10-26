@@ -158,9 +158,10 @@ Email-based authentication instead of username:
 - Structured JSON response format
 - Suggestion logging system for performance tracking
 
-## Security Patterns
+## Security Patterns and Considerations
 
-All item views follow this security pattern:
+### User Ownership Verification
+All item views follow this security pattern to verify user ownership:
 ```python
 try:
     item = Item.objects.get(id=id, user=request.user)
@@ -187,9 +188,20 @@ except Item.DoesNotExist:
 - **Frontend**: Bootstrap 5.2.3, Font Awesome 6.0.0, Chart.js
 - **Database**: SQLite (development)
 - **Image Processing**: Pillow>=11.3.0
+- **API Integration**: openai>=1.0.0 (used but not listed in requirements.txt)
+- **Environment Variables**: python-dotenv>=1.0.0 (used but not listed in requirements.txt)
+- **Timezone Handling**: zoneinfo (used but not listed in requirements.txt)
 
 ## Testing and Quality Assurance
 
 No formal testing framework is currently configured, but standard Django tests can be run:
 - Use `python manage.py test` for running tests
 - Use `python manage.py test beauty` for app-specific tests
+
+### Development Security Notes
+- Secret key is hardcoded in settings.py (development only, should be changed for production)
+- DEBUG = True is set for development (disable for production)
+- ALLOWED_HOSTS is empty (should be configured for production)
+- Database is SQLite (consider PostgreSQL for production)
+- Media directory permissions are set to 0777 (too permissive for production)
+- No HTTPS configuration is present (required for production)
