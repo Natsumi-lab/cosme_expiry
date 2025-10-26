@@ -15,6 +15,7 @@ from datetime import date, timedelta
 from .forms import SignUpForm, SignInForm, ItemForm, UserSettingsForm, PasswordChangeForm
 from .models import Taxon, LlmSuggestionLog, Item, Notification
 import json
+import os
 from .llm import suggest_taxon_candidates
 from openai import APITimeoutError
 from django.db.models import Count
@@ -288,8 +289,27 @@ def item_new(request):
 
             # 画像アップロード処理
             if 'image' in request.FILES:
-                # 後でPillowを使った画像処理を追加予定
-                pass
+                try:
+                    # 画像ファイルの処理を確実に行う（日本語ファイル名にも対応）
+                    file_obj = request.FILES['image']
+                    # 既に画像がある場合は古い画像を削除（ストレージ容量節約のため）
+                    if item.image:
+                        try:
+                            old_path = item.image.path
+                            if os.path.exists(old_path):
+                                os.remove(old_path)
+                        except Exception as e:
+                            # 古いファイルの削除に失敗しても処理続行
+                            print(f"古い画像の削除に失敗: {e}")
+                    
+                    # 新しい画像ファイルを設定
+                    item.image = file_obj
+                    # 古い実装との互換性のため、画像URLもクリア
+                    item.image_url = ''
+                except Exception as e:
+                    # エラーが発生した場合はログに記録
+                    print(f"画像アップロード処理中にエラーが発生: {e}")
+                    messages.warning(request, "画像のアップロードに問題が発生しました。別の画像を試してください。")
             
             item.save()
             
@@ -386,6 +406,31 @@ def item_edit(request, id):
 
             # 変更がある場合は保存（保険：必要なら期限を再計算）
             updated = form.save(commit=False)
+            
+            # 画像処理の確実な実行
+            if 'image' in request.FILES:
+                try:
+                    # 画像ファイルの処理を確実に行う（日本語ファイル名にも対応）
+                    file_obj = request.FILES['image']
+                    
+                    # 既に画像がある場合は古い画像を削除（ストレージ容量節約のため）
+                    if updated.image:
+                        try:
+                            old_path = updated.image.path
+                            if os.path.exists(old_path):
+                                os.remove(old_path)
+                        except Exception as e:
+                            # 古いファイルの削除に失敗しても処理続行
+                            print(f"古い画像の削除に失敗: {e}")
+                    
+                    # 新しい画像ファイルを設定
+                    updated.image = file_obj
+                    # 古い実装との互換性のため、画像URLもクリア
+                    updated.image_url = ''
+                except Exception as e:
+                    # エラーが発生した場合はログに記録
+                    print(f"画像アップロード処理中にエラーが発生: {e}")
+                    messages.warning(request, "画像のアップロードに問題が発生しました。別の画像を試してください。")
 
             # 「カテゴリ or 開封日が変わった」かつ「期限はユーザーが編集していない」→ 自動再計算
             if (changed_product_type or changed_opened_on) and not changed_expires_on:

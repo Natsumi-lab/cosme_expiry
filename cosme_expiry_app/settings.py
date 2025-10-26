@@ -138,6 +138,18 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# メディアディレクトリが存在しない場合は作成
+import os
+import stat
+# メディアルートディレクトリが確実に存在するようにする
+if not os.path.exists(MEDIA_ROOT):
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
+    # Windows環境での権限設定を確実にする
+    try:
+        os.chmod(MEDIA_ROOT, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777 相当
+    except:
+        pass  # エラー無視（権限設定失敗しても続行）
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

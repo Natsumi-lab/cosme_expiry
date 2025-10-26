@@ -29,7 +29,7 @@
                         {% endif %}
                         <!-- Image Preview -->
                         <div id="image-preview" class="mt-3" {% if not item.image %}style="display: none;" {% endif %}>
-                            <img id="preview-img" src="{% if item.image %}{{ item.image.url }}{% else %}#{% endif %}"
+                            <img id="preview-img" src="{% if item.image %}{{ item.image.url }}{% elif item.image_url %}{{ item.image_url }}{% else %}#{% endif %}"
                                 alt="プレビュー" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
                         </div>
                     </div>

@@ -1,6 +1,33 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+import os
+import uuid
+import re
+from datetime import datetime
+
+def get_safe_filename(filename):
+    """
+    日本語ファイル名を安全なファイル名に変換する
+    """
+    # ファイル拡張子を保持
+    name, ext = os.path.splitext(filename)
+    
+    # 現在のタイムスタンプとUUIDを追加して一意にする
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    unique_id = str(uuid.uuid4())[:8]
+    
+    # 英数字とハイフンのみの安全なファイル名を生成
+    safe_name = f"cosmetic_{timestamp}_{unique_id}{ext}"
+    return safe_name
+
+def upload_to_path(instance, filename):
+    """
+    アップロード先のパスを決定する関数
+    """
+    # 日本語ファイル名を安全なファイル名に変換
+    safe_filename = get_safe_filename(filename)
+    return safe_filename
 
 class BaseModel(models.Model):
     """共通フィールド"""
@@ -88,7 +115,8 @@ class Item(BaseModel):
     brand = models.CharField(max_length=100, blank=True, verbose_name="ブランド")
     color_code = models.CharField(max_length=50, blank=True, verbose_name="色番/カラー")
     image_url = models.CharField(max_length=500, blank=True, verbose_name="画像URL")
-    image = models.ImageField(upload_to='items/', blank=True, null=True, verbose_name="商品画像")
+    # アップロード時に安全なファイル名に変換する
+    image = models.ImageField(upload_to=upload_to_path, blank=True, null=True, verbose_name="商品画像")
     
     opened_on = models.DateField(verbose_name="開封日")
     expires_on = models.DateField(verbose_name="使用期限")
