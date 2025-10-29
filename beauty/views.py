@@ -343,8 +343,8 @@ def item_new(request):
 
 @login_required
 def item_edit(request, id):
-    """アイテム編集ビュー"""
-    # ログインユーザーのアイテムのみ取得（セキュリティ対策）
+    """アイテム編集ビュー（修正版）"""
+    # --- ログイン中のユーザーのアイテムだけ取得 ---
     try:
         item = Item.objects.get(id=id, user=request.user)
     except Item.DoesNotExist:
@@ -353,105 +353,80 @@ def item_edit(request, id):
             raise PermissionDenied("このアイテムを編集する権限がありません。")
         else:
             raise Http404("アイテムが見つかりません。")
-    
+
+    #  編集前の古い画像パスを覚えておく
+    old_image_path = item.image.path if item.image else None
+
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES, instance=item)
+
+        #  フォームに変更がなければそのまま戻る
+        if not form.has_changed():
+            messages.info(request, '変更はありません。')
+            taxon_rules = {
+                str(t.id): {"months": t.shelf_life_months, "anchor": t.shelf_life_anchor}
+                for t in Taxon.objects.only('id', 'shelf_life_months', 'shelf_life_anchor')
+            }
+            return render(request, 'items/edit.html', {
+                'form': form,
+                'item': item,
+                'page_title': f'アイテム編集 - {item.name}',
+                'page_description': f'{item.name}の情報を編集します',
+                'taxon_rules': taxon_rules,
+            })
+
         if form.is_valid():
-            # 差分チェック
-            has_changes = False
-            changed_product_type = False
-            changed_opened_on = False
-            changed_expires_on = False
-
-            for field_name in form.fields:
-                original_value = getattr(item, field_name)
-                new_value = form.cleaned_data[field_name]
-
-                if field_name == 'product_type':
-                    orig_id = getattr(original_value, 'id', None)
-                    new_id = getattr(new_value, 'id', None)
-                    if orig_id != new_id:
-                        has_changes = True
-                        changed_product_type = True
-                        # break しない（他の変更も拾いたい場合がある）
-                elif field_name == 'opened_on':
-                    if original_value != new_value:
-                        has_changes = True
-                        changed_opened_on = True
-                elif field_name == 'expires_on':
-                    if original_value != new_value:
-                        has_changes = True
-                        changed_expires_on = True
-                elif field_name == 'image':
-                    if new_value != original_value:
-                        has_changes = True
-                else:
-                    if original_value != new_value:
-                        has_changes = True
-
-            if not has_changes:
-                messages.info(request, '変更はありません。')
-                # JS用ルールを渡して再表示
-                taxon_rules = {
-                    str(t.id): {"months": t.shelf_life_months, "anchor": t.shelf_life_anchor}
-                    for t in Taxon.objects.only('id', 'shelf_life_months', 'shelf_life_anchor')
-                }
-                return render(request, 'items/edit.html', {
-                    'form': form,
-                    'item': item,
-                    'page_title': f'アイテム編集 - {item.name}',
-                    'page_description': f'{item.name}の情報を編集します',
-                    'taxon_rules': taxon_rules,
-                })
-
-            # 変更がある場合は保存（保険：必要なら期限を再計算）
             updated = form.save(commit=False)
-            
-            # 画像処理の確実な実行
-            if 'image' in request.FILES:
-                try:
-                    # 画像ファイルの処理を確実に行う（日本語ファイル名にも対応）
-                    file_obj = request.FILES['image']
-                    
-                    # 既に画像がある場合は古い画像を削除（ストレージ容量節約のため）
-                    if updated.image:
-                        try:
-                            old_path = updated.image.path
-                            if os.path.exists(old_path):
-                                os.remove(old_path)
-                        except Exception as e:
-                            # 古いファイルの削除に失敗しても処理続行
-                            print(f"古い画像の削除に失敗: {e}")
-                    
-                    # 新しい画像ファイルを設定
-                    updated.image = file_obj
-                    # 古い実装との互換性のため、画像URLもクリア
-                    updated.image_url = ''
-                except Exception as e:
-                    # エラーが発生した場合はログに記録
-                    print(f"画像アップロード処理中にエラーが発生: {e}")
-                    messages.warning(request, "画像のアップロードに問題が発生しました。別の画像を試してください。")
 
-            # 「カテゴリ or 開封日が変わった」かつ「期限はユーザーが編集していない」→ 自動再計算
+            #  新しい画像がアップロードされたときだけ古い画像を削除
+            uploaded_new_file = 'image' in request.FILES and request.FILES['image']
+            cleared = request.POST.get('image-clear') == 'on'  # 画像削除ボタン対応
+
+            if uploaded_new_file:
+                if old_image_path and os.path.exists(old_image_path):
+                    try:
+                        os.remove(old_image_path)
+                    except Exception as e:
+                        print(f"古い画像の削除に失敗: {e}")
+                # form.save() ですでに updated.image が新しい画像になっているので、再代入は不要！
+                updated.image_url = ''
+
+            elif cleared:
+                #  画像のクリア指定がある場合
+                if old_image_path and os.path.exists(old_image_path):
+                    try:
+                        os.remove(old_image_path)
+                    except Exception as e:
+                        print(f"古い画像の削除に失敗: {e}")
+                updated.image = None
+                updated.image_url = ''
+
+            # --- 期限の再計算（カテゴリや開封日が変わった場合） ---
+            changed = set(form.changed_data)
+            changed_product_type = 'product_type' in changed
+            changed_opened_on = 'opened_on' in changed
+            changed_expires_on = 'expires_on' in changed
+
             if (changed_product_type or changed_opened_on) and not changed_expires_on:
                 if updated.product_type_id and updated.opened_on:
                     taxon = Taxon.objects.only('shelf_life_months', 'shelf_life_anchor').get(id=updated.product_type_id)
-                    updated.expires_on = _calc_expiry(updated.opened_on, taxon.shelf_life_months, taxon.shelf_life_anchor)
+                    updated.expires_on = _calc_expiry(
+                        updated.opened_on, taxon.shelf_life_months, taxon.shelf_life_anchor
+                    )
                     updated.expires_overridden = False
-            else:
-                # 期限をユーザーが編集した場合は手動上書き扱い
-                if changed_expires_on:
-                    updated.expires_overridden = True
+            elif changed_expires_on:
+                updated.expires_overridden = True
 
             updated.save()
             messages.success(request, 'アイテム情報を更新しました。')
             return redirect('beauty:item_detail', id=updated.id)
+
         else:
             messages.error(request, 'アイテムの更新に失敗しました。入力内容を確認してください。')
+
     else:
         form = ItemForm(instance=item)
 
-    # 初期表示やバリデーションエラー時にJSが使えるよう、Taxonルールを渡す
     taxon_rules = {
         str(t.id): {"months": t.shelf_life_months, "anchor": t.shelf_life_anchor}
         for t in Taxon.objects.only('id', 'shelf_life_months', 'shelf_life_anchor')
@@ -464,7 +439,8 @@ def item_edit(request, id):
         'page_description': f'{item.name}の情報を編集します',
         'taxon_rules': taxon_rules,
     }
-    return render(request, 'items/edit.html', context)   
+    return render(request, 'items/edit.html', context)
+ 
 
 
 @login_required
