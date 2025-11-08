@@ -88,7 +88,7 @@ list_users.py
 test-notification.html
 test-notification-updated.html
 
-#MCP/AI
+# MCP/AI
 .serena
 serena
 .mcp.json
@@ -96,4 +96,9 @@ serena
 CLAUDE.md
 .claude_backup/
 
+# データベースのフルダンプ
+initial_data.json
+
+# Others
 index.html
+replacements.txt

@@ -127,7 +127,7 @@ python manage.py runserver
 ```
 
 ## 🌐 アクセス：
-http://127.0.0.1:8000/
+https://natsumich.pythonanywhere.com/
 
 
 ## 🔑 デモアカウント
