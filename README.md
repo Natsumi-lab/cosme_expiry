@@ -93,7 +93,7 @@ AIによるカテゴリ自動補完・自動期限計算・可視化を組み合
 ### 💾 バックエンド
 - 言語：Python 3.13+  
 - フレームワーク：Django 5.2.4  
-- データベース：SQLite（開発環境）  
+- データベース：SQLite 
 - 認証：Django EmailBackend  
 - AI連携：OpenAI API（gpt-5-nano）  
 - 実装：`beauty/llm.py` にてクライアント構築  
