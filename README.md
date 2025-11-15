@@ -130,23 +130,23 @@ https://natsumich.pythonanywhere.com/
 ```
 ---
 <p align="left">
-  <img src="assets/images/designcomp800.png" width="600" alt="カンプ画像">
+  <img src="assets/images/designcomp800.png" width="800" alt="カンプ画像">
 </p>
 
 <p align="left">
-  <img src="assets/images/DFD.png" width="600" alt="DFD画像">
+  <img src="assets/images/DFD.png" width="800" alt="DFD画像">
 </p>
 
 <p align="left">
-  <img src="assets/images/seq_items_register.png" width="600" alt="seq画像：アイテム登録">
+  <img src="assets/images/seq_items_register.png" width="800" alt="seq画像：アイテム登録">
 </p>
 
 <p align="left">
-  <img src="assets/images/seq_items_edit.png" width="600" alt="seq画像：アイテム編集">
+  <img src="assets/images/seq_items_edit.png" width="800" alt="seq画像：アイテム編集">
 </p>
 
 <p align="left">
-  <img src="assets/images/seq_home_notify.png" width="600" alt="seq画像：通知">
+  <img src="assets/images/seq_home_notify.png" width="800" alt="seq画像：通知">
 </p>
 
 ---
